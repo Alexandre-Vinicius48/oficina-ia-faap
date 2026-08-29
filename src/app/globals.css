@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* ===========================================================================
+   PALETA E TIPOGRAFIA
+   Pensada para leitura confortavel por pessoas idosas:
+   - texto base grande (a raiz e 18px, nao 16px);
+   - contraste bem acima do minimo exigido pela norma de acessibilidade;
+   - nenhum texto cinza claro sobre fundo claro.
+   =========================================================================== */
+@theme {
+  /* Azul institucional: universidade, confianca. */
+  --color-marca-50: #eef4fb;
+  --color-marca-100: #d8e6f6;
+  --color-marca-200: #b3cdec;
+  --color-marca-500: #1f5fa9;
+  --color-marca-600: #174c8b;
+  --color-marca-700: #113a6b;
+  --color-marca-900: #0b2747;
+
+  /* Laranja acolhedor: calor humano, comunidade. */
+  --color-acolhe-50: #fff4e8;
+  --color-acolhe-100: #ffe6cc;
+  --color-acolhe-500: #d2650a;
+  --color-acolhe-600: #b45408;
+  --color-acolhe-700: #8f4206;
+  --color-acolhe-800: #6f3305;
+
+  /* Neutros com contraste garantido. */
+  --color-tinta: #16202f;        /* texto principal  - 14.9:1 no branco */
+  --color-tinta-suave: #3d4a5c;  /* texto secundario -  8.6:1 no branco */
+  --color-papel: #fbf9f6;        /* fundo creme suave */
+  --color-borda: #d6d2cc;
+
+  --color-sucesso-50: #e9f7ee;
+  --color-sucesso-700: #15683a;
+  --color-erro-50: #fdecec;
+  --color-erro-600: #b3261e;
+  --color-erro-700: #8f1d17;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+
+  --radius-suave: 1rem;
+}
+
+/* Raiz em 18px: tudo no site cresce junto, inclusive quando a pessoa
+   aumenta a fonte do proprio navegador. */
+html {
+  font-size: 18px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-papel);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  min-height: 100dvh;
+}
+
+/* Foco sempre visivel e grosso: essencial para navegacao por teclado. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 4px solid var(--color-acolhe-600);
+  outline-offset: 3px;
+  border-radius: 0.5rem;
+}
+
+/* Alvos de toque confortaveis no celular. */
+button,
+[type="button"],
+[type="submit"],
+input,
+select {
+  min-height: 3.25rem; /* ~58px */
+}
+input[type="checkbox"] {
+  min-height: auto;
+}
+
+/* Respeita quem pediu menos animacao no sistema operacional. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Entrada suave dos blocos ao carregar a pagina. */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animacao-surgir {
+  animation: surgir 0.5s ease-out both;
+}
+
+/* Link "pular para o conteudo", visivel apenas ao navegar por teclado. */
+.pular-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 50;
+}
+.pular-link:focus {
+  left: 1rem;
+  top: 1rem;
+  background: var(--color-marca-700);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+}
+
+@media print {
+  .sem-impressao {
+    display: none !important;
+  }
+}
