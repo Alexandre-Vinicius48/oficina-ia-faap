@@ -180,6 +180,12 @@ e avisa se houver qualquer erro.
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
 7. Clique em **Deploy** e aguarde alguns minutos.
+
+> **Cadastre as variáveis ANTES de clicar em Deploy.** Os endereços do
+> Supabase ficam gravados dentro do site no momento em que ele é montado. Se
+> o Deploy rodar sem eles, o site abre mas o formulário não salva nada. Se
+> isso acontecer: cadastre as variáveis e clique em **Redeploy** — só salvar
+> não resolve, é preciso montar o site de novo.
 8. A Vercel mostra o endereço do site, algo como
    `https://oficina-ia-faap.vercel.app`. O **HTTPS (cadeado)** já vem ligado.
 
@@ -229,6 +235,36 @@ Hora da inscrição.
 
 ---
 
+## 8.1 Colocar os logos oficiais
+
+O site já usa as fotos da oficina (pasta `public/fotos`). Para os logos, salve
+os dois arquivos com **exatamente estes nomes**:
+
+```
+public/logos/faap.svg
+public/logos/bairro-com-vida.svg
+```
+
+Também funciona `.png` (com fundo transparente) ou `.webp` — o site procura
+sozinho, nesta ordem: `.svg`, `.png`, `.webp`, `.jpg`. Prefira SVG: fica
+nítido em qualquer tela.
+
+Assim que os arquivos existirem, os logos oficiais aparecem no cabeçalho, na
+página inicial, nos selos de parceria e no rodapé. **Não é preciso mexer em
+nenhum código.** Rodando local, reinicie o site (`Ctrl+C` e `npm run dev`);
+publicado, envie para o GitHub.
+
+Enquanto os arquivos não estiverem lá, o site mostra um selo de texto no
+lugar — nada quebra e nada fica com cara de erro.
+
+### Trocar as fotos
+
+As fotos ficam em `public/fotos`. Para trocar uma, salve a nova com o mesmo
+nome do arquivo antigo. Para usar outro nome, mude também o campo `foto` em
+`src/config/oficina.ts`.
+
+---
+
 ## 9. Alterar os textos da oficina
 
 Todos os textos ficam em **um único arquivo**:
@@ -244,6 +280,10 @@ Abra-o em qualquer editor. Você pode mudar:
 - `chamada` — a frase de destaque
 - `descricao` — o parágrafo de apresentação
 - `temas` — a lista de assuntos que aparecem em cartões
+- `slides` — os quatro destaques do carrossel (título, texto e foto)
+- `passos` — os três passos de "Como funciona a matrícula"
+- `galeria` — as fotos e legendas da galeria
+- `parceria` — as frases institucionais ("Tecnologia que aproxima.")
 - `contato` — e-mail e WhatsApp mostrados no rodapé
 
 Altere apenas o texto **entre aspas**. Não apague as vírgulas nem as aspas.
@@ -348,10 +388,13 @@ oficina-ia/
 │  │  └─ api/
 │  │     ├─ inscricoes/route.ts        grava a matrícula (público)
 │  │     └─ admin/                     lista, perfil e exportação (privado)
-│  ├─ components/                      peças de tela reaproveitadas
+│  ├─ components/                      peças de tela (carrossel, logos, campos)
 │  ├─ config/oficina.ts                TEXTOS DA OFICINA (edite aqui)
 │  ├─ lib/                             validação, formatação, segurança
 │  └─ middleware.ts                    portão de entrada e CSP
+├─ public/
+│  ├─ fotos/                          fotos da oficina
+│  └─ logos/                          logos da FAAP e do Bairro com Vida
 ├─ supabase/migrations/                SQL para configurar o banco
 ├─ tests/                              testes automáticos
 └─ .env.example                        modelo das variáveis de ambiente

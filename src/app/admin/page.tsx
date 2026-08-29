@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { administradorAtual } from "@/lib/auth";
 import { FormularioLogin } from "@/components/FormularioLogin";
 import { Icone } from "@/components/Icones";
-import { Selo } from "@/components/Marca";
+import { LogosParceria } from "@/components/Logos";
 import { OFICINA } from "@/config/oficina";
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default async function PaginaLoginAdmin() {
     >
       <div className="animacao-surgir w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
-          <Selo className="mb-4" />
+          <LogosParceria alturaPx={38} className="mb-6 justify-center" />
           <h1 className="text-[1.7rem] font-extrabold text-marca-900">
             Área administrativa
           </h1>

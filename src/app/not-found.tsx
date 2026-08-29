@@ -4,7 +4,7 @@ import { Cabecalho, Rodape } from "@/components/Marca";
 export default function PaginaNaoEncontrada() {
   return (
     <>
-      <Cabecalho />
+      <Cabecalho comBotao={false} />
       <main id="conteudo" className="flex-1">
         <div className="mx-auto max-w-2xl px-5 py-20 text-center">
           <h1 className="text-[1.9rem] font-extrabold text-marca-900">

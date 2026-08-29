@@ -1,6 +1,27 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { OFICINA } from "@/config/oficina";
 import "./globals.css";
+
+/**
+ * Fontes do Google baixadas na hora de montar o projeto e servidas pelo
+ * proprio site. Nenhuma requisicao sai para fora quando alguem visita a
+ * pagina — bom para privacidade, para velocidade e para a politica de
+ * seguranca (CSP).
+ */
+const fonteTitulo = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--fonte-titulo",
+  display: "swap",
+});
+
+const fonteTexto = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--fonte-texto",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -8,12 +29,7 @@ export const metadata: Metadata = {
     template: `%s — ${OFICINA.titulo}`,
   },
   description: OFICINA.chamada,
-  robots: {
-    // A area administrativa nunca deve aparecer em buscadores.
-    index: true,
-    follow: true,
-    nocache: true,
-  },
+  robots: { index: true, follow: true, nocache: true },
 };
 
 /**
@@ -31,14 +47,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Nao travamos o zoom: a pessoa precisa poder aumentar a letra.
   maximumScale: 5,
-  themeColor: "#113a6b",
+  themeColor: "#16398a",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${fonteTitulo.variable} ${fonteTexto.variable}`}>
       <body className="flex min-h-dvh flex-col antialiased">
         <a href="#conteudo" className="pular-link">
           Pular para o conteúdo

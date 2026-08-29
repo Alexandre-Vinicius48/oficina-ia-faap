@@ -1,35 +1,50 @@
 @import "tailwindcss";
 
 /* ===========================================================================
-   PALETA E TIPOGRAFIA
-   Pensada para leitura confortavel por pessoas idosas:
-   - texto base grande (a raiz e 18px, nao 16px);
-   - contraste bem acima do minimo exigido pela norma de acessibilidade;
-   - nenhum texto cinza claro sobre fundo claro.
+   IDENTIDADE VISUAL — FAAP + Bairro com Vida
+   ---------------------------------------------------------------------------
+   A paleta nasce dos dois logos:
+     · o azul institucional da FAAP conduz a identidade (confianca, educacao);
+     · as cores do coracao do Bairro com Vida entram como acentos quentes
+       (acolhimento, comunidade).
+   Tudo foi escolhido com contraste alto, porque o publico principal e formado
+   por pessoas idosas. Nenhum texto cinza-claro sobre fundo claro.
    =========================================================================== */
 @theme {
-  /* Azul institucional: universidade, confianca. */
-  --color-marca-50: #eef4fb;
-  --color-marca-100: #d8e6f6;
-  --color-marca-200: #b3cdec;
-  --color-marca-500: #1f5fa9;
-  --color-marca-600: #174c8b;
-  --color-marca-700: #113a6b;
-  --color-marca-900: #0b2747;
+  /* --- Azul FAAP: a cor institucional do projeto ------------------------- */
+  --color-marca-50: #eef3fd;
+  --color-marca-100: #dde7fb;
+  --color-marca-200: #bcd0f6;
+  --color-marca-300: #93b1ef;
+  --color-marca-400: #5c82e2;
+  --color-marca-500: #2456cf;
+  --color-marca-600: #1c47ad;
+  --color-marca-700: #16398a;
+  --color-marca-800: #122f6f;
+  --color-marca-900: #0d2350;
 
-  /* Laranja acolhedor: calor humano, comunidade. */
-  --color-acolhe-50: #fff4e8;
-  --color-acolhe-100: #ffe6cc;
-  --color-acolhe-500: #d2650a;
-  --color-acolhe-600: #b45408;
-  --color-acolhe-700: #8f4206;
-  --color-acolhe-800: #6f3305;
+  /* --- Acento quente: o coral do Bairro com Vida ------------------------- */
+  --color-acolhe-50: #fdf1ee;
+  --color-acolhe-100: #fbdfd8;
+  --color-acolhe-200: #f5bcaf;
+  --color-acolhe-500: #cf5340;
+  --color-acolhe-600: #b23a29;
+  --color-acolhe-700: #932f21;
+  --color-acolhe-800: #75261b;
 
-  /* Neutros com contraste garantido. */
-  --color-tinta: #16202f;        /* texto principal  - 14.9:1 no branco */
-  --color-tinta-suave: #3d4a5c;  /* texto secundario -  8.6:1 no branco */
-  --color-papel: #fbf9f6;        /* fundo creme suave */
-  --color-borda: #d6d2cc;
+  /* --- Demais cores do coracao, para detalhes e icones ------------------- */
+  --color-vida-roxo: #6d4590;
+  --color-vida-verde: #2b8f81;
+  --color-vida-azul: #3a7bc8;
+  --color-vida-laranja: #c9761b;
+  --color-vida-amarelo: #b58611;
+
+  /* --- Neutros ---------------------------------------------------------- */
+  --color-tinta: #14213a;        /* texto principal   — 15.4:1 no branco */
+  --color-tinta-suave: #44506b;  /* texto secundario  —  8.2:1 no branco */
+  --color-papel: #fbfaf8;        /* fundo creme suave */
+  --color-papel-alt: #f3f1ec;    /* faixas alternadas */
+  --color-borda: #ddd9d2;
 
   --color-sucesso-50: #e9f7ee;
   --color-sucesso-700: #15683a;
@@ -37,14 +52,15 @@
   --color-erro-600: #b3261e;
   --color-erro-700: #8f1d17;
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  /* --- Tipografia ------------------------------------------------------- */
+  --font-titulo: var(--fonte-titulo), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--fonte-texto), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius-suave: 1rem;
 }
 
-/* Raiz em 18px: tudo no site cresce junto, inclusive quando a pessoa
-   aumenta a fonte do proprio navegador. */
+/* Raiz em 18px: tudo cresce junto, inclusive quando a pessoa aumenta a
+   fonte do proprio navegador. */
 html {
   font-size: 18px;
   -webkit-text-size-adjust: 100%;
@@ -57,6 +73,11 @@ body {
   font-family: var(--font-sans);
   line-height: 1.65;
   min-height: 100dvh;
+}
+
+h1, h2, h3, .fonte-titulo {
+  font-family: var(--font-titulo);
+  letter-spacing: -0.02em;
 }
 
 /* Foco sempre visivel e grosso: essencial para navegacao por teclado. */
@@ -92,38 +113,50 @@ input[type="checkbox"] {
 
 /* Entrada suave dos blocos ao carregar a pagina. */
 @keyframes surgir {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
 }
 .animacao-surgir {
-  animation: surgir 0.5s ease-out both;
+  animation: surgir 0.55s ease-out both;
 }
+.atraso-1 { animation-delay: 0.08s; }
+.atraso-2 { animation-delay: 0.16s; }
+.atraso-3 { animation-delay: 0.24s; }
 
 /* Link "pular para o conteudo", visivel apenas ao navegar por teclado. */
 .pular-link {
   position: absolute;
   left: -9999px;
   top: 0;
-  z-index: 50;
+  z-index: 60;
 }
 .pular-link:focus {
   left: 1rem;
   top: 1rem;
-  background: var(--color-marca-700);
+  background: var(--color-marca-800);
   color: white;
   padding: 1rem 1.5rem;
   border-radius: 0.75rem;
   font-weight: 700;
 }
 
+/* --------------------------------------------------------------------------
+   Detalhes graficos discretos
+   -------------------------------------------------------------------------- */
+
+/* Malha de pontos suave, usada como fundo de secoes institucionais. */
+.textura-pontos {
+  background-image: radial-gradient(var(--color-marca-200) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+}
+
+/* Divisor curvo entre secoes, para tirar a rigidez das faixas retas. */
+.divisor-curva {
+  display: block;
+  width: 100%;
+  height: 3rem;
+}
+
 @media print {
-  .sem-impressao {
-    display: none !important;
-  }
+  .sem-impressao { display: none !important; }
 }

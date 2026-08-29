@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { administradorAtual } from "@/lib/auth";
 import { PainelInscritos } from "@/components/PainelInscritos";
-import { Selo } from "@/components/Marca";
-import { OFICINA } from "@/config/oficina";
+import { LogosParceria } from "@/components/Logos";
 
 export const metadata: Metadata = {
   title: "Painel de inscritos",
@@ -21,16 +20,11 @@ export default async function PaginaDashboard() {
   return (
     <>
       <header className="border-b-2 border-borda bg-white">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-5">
-          <Selo />
-          <div className="leading-tight">
-            <p className="text-[1.15rem] font-extrabold text-marca-900">
-              OFICINA DE IA
-            </p>
-            <p className="text-[0.98rem] font-semibold text-tinta-suave">
-              {OFICINA.subtitulo}
-            </p>
-          </div>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
+          <LogosParceria alturaPx={36} />
+          <p className="text-[0.9rem] font-bold tracking-[0.12em] text-tinta-suave uppercase">
+            Painel da oficina
+          </p>
         </div>
       </header>
 
