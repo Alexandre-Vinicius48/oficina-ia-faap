@@ -22,12 +22,76 @@ import Image from "next/image";
 
 const PASTA_LOGOS = path.join(process.cwd(), "public", "logos");
 
-function procurarArquivo(base: string): { src: string; vetor: boolean } | null {
+type ArquivoLogo = { src: string; vetor: boolean; proporcao: number };
+
+/** Proporcao usada quando nao conseguimos medir o arquivo (largura / altura). */
+const PROPORCAO_PADRAO = 2.8;
+
+/**
+ * Descobre a proporcao do logo lendo o proprio arquivo.
+ *
+ * Sem isso a imagem sairia esticada ou achatada quando alguem trocasse o
+ * arquivo por outro de formato diferente. Lemos:
+ *   · SVG  -> o viewBox (ou os atributos width/height);
+ *   · PNG  -> o cabecalho IHDR, que traz largura e altura em bytes fixos.
+ * Outros formatos caem na proporcao padrao, e o navegador ajusta pelo CSS.
+ */
+function medirProporcao(caminho: string, extensao: string): number {
+  try {
+    if (extensao === ".svg") {
+      const texto = fs.readFileSync(caminho, "utf8").slice(0, 2000);
+
+      const viewBox = texto.match(
+        /viewBox\s*=\s*["']\s*[-\d.]+[,\s]+[-\d.]+[,\s]+([\d.]+)[,\s]+([\d.]+)/i,
+      );
+      if (viewBox?.[1] && viewBox[2]) {
+        const largura = Number(viewBox[1]);
+        const altura = Number(viewBox[2]);
+        if (largura > 0 && altura > 0) return largura / altura;
+      }
+
+      const largura = texto.match(/\bwidth\s*=\s*["']([\d.]+)/i);
+      const altura = texto.match(/\bheight\s*=\s*["']([\d.]+)/i);
+      if (largura?.[1] && altura?.[1]) {
+        const l = Number(largura[1]);
+        const a = Number(altura[1]);
+        if (l > 0 && a > 0) return l / a;
+      }
+    }
+
+    if (extensao === ".png") {
+      // Assinatura PNG (8 bytes) + tamanho e nome do bloco (8) + IHDR:
+      // largura nos bytes 16-19 e altura nos bytes 20-23, em big-endian.
+      const cabecalho = Buffer.alloc(24);
+      const arquivo = fs.openSync(caminho, "r");
+      try {
+        fs.readSync(arquivo, cabecalho, 0, 24, 0);
+      } finally {
+        fs.closeSync(arquivo);
+      }
+      if (cabecalho.subarray(1, 4).toString("ascii") === "PNG") {
+        const largura = cabecalho.readUInt32BE(16);
+        const altura = cabecalho.readUInt32BE(20);
+        if (largura > 0 && altura > 0) return largura / altura;
+      }
+    }
+  } catch {
+    // Arquivo estranho ou sem permissao: seguimos com a proporcao padrao.
+  }
+
+  return PROPORCAO_PADRAO;
+}
+
+function procurarArquivo(base: string): ArquivoLogo | null {
   for (const extensao of [".svg", ".png", ".webp", ".jpg"]) {
     const caminho = path.join(PASTA_LOGOS, `${base}${extensao}`);
     try {
       if (fs.existsSync(caminho)) {
-        return { src: `/logos/${base}${extensao}`, vetor: extensao === ".svg" };
+        return {
+          src: `/logos/${base}${extensao}`,
+          vetor: extensao === ".svg",
+          proporcao: medirProporcao(caminho, extensao),
+        };
       }
     } catch {
       // Sem permissao de leitura: seguimos com o selo tipografico.
@@ -110,10 +174,9 @@ export function LogoFaap({ className = "", alturaPx = 44 }: Props) {
       <Image
         src={arquivoFaap.src}
         alt="FAAP — Fundação Armando Alvares Penteado"
-        width={alturaPx * 3}
+        width={Math.round(alturaPx * arquivoFaap.proporcao)}
         height={alturaPx}
-        className={`h-auto w-auto shrink-0 object-contain ${className}`}
-        style={{ height: alturaPx }}
+        className={`shrink-0 object-contain ${className}`}
         priority
         unoptimized={arquivoFaap.vetor}
       />
@@ -151,10 +214,9 @@ export function LogoBairro({ className = "", alturaPx = 44 }: Props) {
       <Image
         src={arquivoBairro.src}
         alt="Bairro com Vida"
-        width={alturaPx * 3}
+        width={Math.round(alturaPx * arquivoBairro.proporcao)}
         height={alturaPx}
-        className={`h-auto w-auto shrink-0 object-contain ${className}`}
-        style={{ height: alturaPx }}
+        className={`shrink-0 object-contain ${className}`}
         priority
         unoptimized={arquivoBairro.vetor}
       />
