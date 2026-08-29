@@ -93,19 +93,23 @@ Administrador é quem pode entrar em `/admin/dashboard` e ver os inscritos.
 2. Clique em **Add user** → **Create new user**.
 3. Preencha o **e-mail** e uma **senha forte** (use pelo menos 12 caracteres,
    misturando letras, números e símbolos).
-4. **Marque a caixinha “Auto Confirm User”.** Sem isso a pessoa não consegue
-   entrar.
+4. Se aparecer uma caixinha **“Auto Confirm User”**, marque. **Se não
+   aparecer, siga em frente** — as versões mais novas do painel não mostram
+   mais essa opção, e o SQL do Passo 2 já resolve isso.
 5. Clique em **Create user**.
 
-### Passo 2 — dar permissão de administrador
+### Passo 2 — confirmar o e-mail e dar permissão
 
 Criar a conta ainda **não** dá acesso ao painel. Falta autorizá-la:
 
-1. Menu da esquerda → **SQL Editor** → **New query**.
+1. Menu da esquerda → **SQL Editor** → **Create a new snippet**
+   (em versões antigas o botão se chamava *New query*).
 2. Cole o conteúdo do arquivo `supabase/migrations/0002_criar_administrador.sql`.
-3. **Troque** `TROQUE-AQUI@exemplo.com` pelo e-mail que você acabou de criar.
+3. **Troque `TROQUE-AQUI@exemplo.com` pelo seu e-mail nos três lugares**
+   marcados com `<<<<<<`.
 4. Clique em **Run**.
-5. No resultado deve aparecer uma linha com esse e-mail. Deu certo.
+5. O resultado é uma tabela com uma linha. As colunas **email_confirmado** e
+   **e_administrador** precisam vir as duas como `true`.
 
 Repita os dois passos para cada responsável que precisar de acesso.
 
