@@ -5,7 +5,7 @@ const ITENS = [
     icone: "check" as const,
     titulo: "Para que servem seus dados",
     texto:
-      "Nome, CPF, RG, celular e e-mail são usados apenas para identificar você, confirmar sua matrícula, organizar a turma e avisar sobre a oficina.",
+      "Nome, CPF, celular e e-mail são usados apenas para identificar você, confirmar sua matrícula, organizar a turma e avisar sobre a oficina.",
   },
   {
     icone: "cadeado" as const,

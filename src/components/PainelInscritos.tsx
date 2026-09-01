@@ -12,7 +12,6 @@ type Inscrito = {
   id: string;
   nome_completo: string;
   cpf: string;
-  rg: string;
   celular: string;
   email: string;
   data_inscricao: string;
@@ -276,7 +275,7 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
               nome={completo ? "olhoFechado" : "olho"}
               className="h-6 w-6"
             />
-            {completo ? "Ocultar CPF e RG" : "Mostrar CPF e RG"}
+            {completo ? "Ocultar CPF" : "Mostrar CPF completo"}
           </button>
 
           <button
@@ -291,8 +290,8 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
 
         {completo && (
           <p className="mt-4 rounded-xl bg-acolhe-50 p-4 text-[1rem] font-semibold text-acolhe-700">
-            Documentos completos visíveis na tela. Cuidado com quem está por
-            perto e volte a ocultar quando terminar.
+            CPF completo visível na tela. Cuidado com quem está por perto e
+            volte a ocultar quando terminar.
           </p>
         )}
 
@@ -343,10 +342,6 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
                   <dd className="font-mono text-tinta">{item.cpf}</dd>
                 </div>
                 <div className="flex gap-2">
-                  <dt className="font-bold text-tinta-suave">RG:</dt>
-                  <dd className="font-mono text-tinta">{item.rg}</dd>
-                </div>
-                <div className="flex gap-2">
                   <dt className="font-bold text-tinta-suave">Celular:</dt>
                   <dd className="text-tinta">{mascararCelular(item.celular)}</dd>
                 </div>
@@ -384,7 +379,7 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
             </caption>
             <thead>
               <tr className="bg-marca-50">
-                {["Nome", "CPF", "RG", "Celular", "E-mail", "Data"].map((titulo) => (
+                {["Nome", "CPF", "Celular", "E-mail", "Data"].map((titulo) => (
                   <th
                     key={titulo}
                     scope="col"
@@ -409,9 +404,6 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
                   </th>
                   <td className="px-4 py-4 font-mono whitespace-nowrap text-tinta">
                     {item.cpf}
-                  </td>
-                  <td className="px-4 py-4 font-mono whitespace-nowrap text-tinta">
-                    {item.rg}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-tinta">
                     {mascararCelular(item.celular)}

@@ -15,8 +15,6 @@
 --                000.000.000-00 e aplicada apenas na tela. Isso evita que o
 --                mesmo CPF entre duas vezes escrito de formas diferentes.
 --   * celular -> guardado SOMENTE com numeros (10 ou 11 digitos), mesma logica.
---   * rg      -> guardado sem pontos/tracos e em MAIUSCULAS, porque o formato
---                do RG muda de estado para estado (alguns tem letra).
 --   * email   -> guardado em minusculas.
 --   * data_inscricao -> um unico campo timestamptz. "Data" e "hora" separadas
 --                sao geradas a partir dele no fuso America/Sao_Paulo (colunas
@@ -25,7 +23,6 @@ create table if not exists public.inscricoes (
   id                 uuid primary key default gen_random_uuid(),
   nome_completo      text        not null,
   cpf                text        not null unique,
-  rg                 text        not null,
   celular            text        not null,
   email              text        not null,
   consentimento_lgpd boolean     not null default false,
@@ -39,7 +36,6 @@ create table if not exists public.inscricoes (
   constraint inscricoes_celular_numerico check (celular ~ '^[0-9]{10,11}$'),
   constraint inscricoes_email_formato    check (email ~* '^[^@[:space:]]+@[^@[:space:]]+\.[a-z]{2,}$'),
   constraint inscricoes_nome_tamanho     check (char_length(btrim(nome_completo)) between 3 and 120),
-  constraint inscricoes_rg_tamanho       check (char_length(btrim(rg)) between 4 and 20),
   -- Sem consentimento LGPD nao existe inscricao.
   constraint inscricoes_consentimento    check (consentimento_lgpd = true)
 );

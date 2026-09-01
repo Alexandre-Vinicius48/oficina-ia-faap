@@ -15,7 +15,6 @@ import {
 const VAZIO: CamposFormulario = {
   nome_completo: "",
   cpf: "",
-  rg: "",
   celular: "",
   email: "",
   consentimento_lgpd: false,
@@ -24,7 +23,6 @@ const VAZIO: CamposFormulario = {
 const ORDEM: (keyof CamposFormulario)[] = [
   "nome_completo",
   "cpf",
-  "rg",
   "celular",
   "email",
   "consentimento_lgpd",
@@ -189,21 +187,6 @@ export function FormularioInscricao() {
             referencias.current.cpf = el;
           }}
           onChange={(e) => atualizar("cpf", mascararCpf(e.target.value))}
-        />
-
-        <Campo
-          id="rg"
-          rotulo="RG"
-          placeholder="Digite seu RG"
-          autoComplete="off"
-          maxLength={20}
-          value={campos.rg}
-          erro={erros.rg}
-          disabled={enviando}
-          ref={(el) => {
-            referencias.current.rg = el;
-          }}
-          onChange={(e) => atualizar("rg", e.target.value)}
         />
 
         <Campo

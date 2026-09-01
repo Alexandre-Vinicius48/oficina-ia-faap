@@ -221,8 +221,8 @@ publica sozinha a nova versão.
 4. O arquivo `inscritos_oficina_ia_faap.xlsx` é baixado e abre no Excel, no
    Google Planilhas ou no LibreOffice.
 
-O arquivo traz: Nome completo, CPF, RG, Celular, E-mail, Data da inscrição e
-Hora da inscrição.
+O arquivo traz: Nome completo, CPF, Celular, E-mail, Data da inscrição e Hora da
+inscrição.
 
 > Ninguém sem login consegue baixar esse arquivo. O sistema confere quem está
 > pedindo **antes** de gerar a planilha.
@@ -231,9 +231,9 @@ Hora da inscrição.
 
 - **Total de inscritos** e **Inscritos hoje** aparecem no topo.
 - O campo de pesquisa procura por nome, CPF, celular ou e-mail.
-- CPF e RG aparecem escondidos (`***.456.789-**`). Use **Mostrar CPF e RG**
-  para ver por completo quando precisar conferir um documento — e clique de
-  novo para esconder.
+- O CPF aparece escondido (`***.456.789-**`). Use **Mostrar CPF completo**
+  para vê-lo por inteiro quando precisar conferir — e clique de novo para
+  esconder.
 - A lista mostra sempre as inscrições mais recentes primeiro.
 - **SAIR** encerra a sessão.
 
@@ -345,7 +345,7 @@ data ainda não está definida.
   tudo de novo antes de gravar.
 - **Validação dupla:** no navegador (para avisar rápido) e no servidor
   (que é o que realmente vale), mais restrições no próprio banco.
-- **CPF e RG nunca aparecem** em endereços da web, em telas públicas nem nos
+- **O CPF nunca aparece** em endereços da web, em telas públicas nem nos
   registros técnicos (logs).
 - **Proteção contra XSS** com Content Security Policy usando um código
   sorteado a cada visita.

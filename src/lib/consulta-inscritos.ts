@@ -1,15 +1,13 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { mascararCpf, ocultarCpf, ocultarRg, somenteDigitos } from "@/lib/format";
+import { mascararCpf, ocultarCpf, somenteDigitos } from "@/lib/format";
 
 export type InscritoLista = {
   id: string;
   nome_completo: string;
   /** Escondido (***.456.789-**) ou completo e formatado (123.456.789-09). */
   cpf: string;
-  /** Escondido (*******89) ou completo. */
-  rg: string;
   celular: string; // sempre em numeros; a tela aplica a mascara
   email: string;
   data_inscricao: string; // ISO
@@ -71,7 +69,7 @@ export async function listarInscritos({
 
   let consulta = supabase
     .from("inscricoes")
-    .select("id, nome_completo, cpf, rg, celular, email, data_inscricao", {
+    .select("id, nome_completo, cpf, celular, email, data_inscricao", {
       count: "exact",
     })
     .order("data_inscricao", { ascending: false })
@@ -114,7 +112,6 @@ export async function listarInscritos({
     cpf: completo
       ? mascararCpf(linha.cpf as string)
       : ocultarCpf(linha.cpf as string),
-    rg: completo ? (linha.rg as string) : ocultarRg(linha.rg as string),
     celular: linha.celular as string,
     email: linha.email as string,
     data_inscricao: linha.data_inscricao as string,

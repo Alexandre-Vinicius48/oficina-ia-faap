@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Esta tela NAO mostra nenhum dado pessoal - nem nome, nem CPF, nem RG.
+ * Esta tela NAO mostra nenhum dado pessoal - nem nome, nem CPF.
  * O cookie usado aqui guarda apenas a marca "ok", nada mais.
  */
 export default async function PaginaSucesso() {

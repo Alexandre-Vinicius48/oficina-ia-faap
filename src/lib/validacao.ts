@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  normalizarEmail,
-  normalizarNome,
-  normalizarRg,
-  somenteDigitos,
-} from "@/lib/format";
+import { normalizarEmail, normalizarNome, somenteDigitos } from "@/lib/format";
 
 /**
  * Validacao do CPF pelos digitos verificadores (algoritmo oficial da
@@ -73,12 +68,6 @@ export const inscricaoSchema = z.object({
     .transform(somenteDigitos)
     .refine(cpfEhValido, { message: "Digite um CPF válido." }),
 
-  rg: z
-    .string({ error: "Digite seu RG." })
-    .transform(normalizarRg)
-    .refine((v) => v.length >= 4, { message: "Digite um RG válido." })
-    .refine((v) => v.length <= 20, { message: "Digite um RG válido." }),
-
   celular: z
     .string({ error: "Digite um número de celular válido." })
     .transform(somenteDigitos)
@@ -104,7 +93,6 @@ export type DadosInscricao = z.infer<typeof inscricaoSchema>;
 export type CamposFormulario = {
   nome_completo: string;
   cpf: string;
-  rg: string;
   celular: string;
   email: string;
   consentimento_lgpd: boolean;

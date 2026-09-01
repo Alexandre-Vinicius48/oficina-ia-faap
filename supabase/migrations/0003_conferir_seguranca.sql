@@ -83,8 +83,8 @@ begin
   set local role anon;
   begin
     insert into public.inscricoes
-      (nome_completo, cpf, rg, celular, email, consentimento_lgpd)
-    values ('Teste Invasor', '00000000000', '0000', '11900000000',
+      (nome_completo, cpf, celular, email, consentimento_lgpd)
+    values ('Teste Invasor', '00000000000', '11900000000',
             'teste@invasor.com', true);
     raise warning 'ATENCAO: visitante sem login conseguiu gravar!';
     raise exception 'desfazendo';   -- garante que nada fique gravado

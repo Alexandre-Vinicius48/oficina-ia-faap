@@ -133,7 +133,7 @@ export const OFICINA = {
     {
       titulo: "Preencha o formulário",
       texto:
-        "São cinco campos simples: nome, CPF, RG, celular e e-mail. Leva menos de dois minutos.",
+        "São quatro campos simples: nome, CPF, celular e e-mail. Leva menos de dois minutos.",
     },
     {
       titulo: "Receba a confirmação",

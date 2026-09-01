@@ -6,8 +6,6 @@ import {
   mascararCpf,
   mascararCelular,
   ocultarCpf,
-  ocultarRg,
-  normalizarRg,
   somenteDigitos,
 } from "@/lib/format";
 import { limparBusca } from "@/lib/consulta-inscritos";
@@ -50,19 +48,11 @@ test("mascaras montam o texto enquanto a pessoa digita", () => {
   assert.equal(somenteDigitos("(11) 98765-4321"), "11987654321");
 });
 
-test("CPF e RG nunca aparecem inteiros quando mascarados", () => {
+test("CPF nunca aparece inteiro quando mascarado", () => {
   const escondido = ocultarCpf("52998224725");
   assert.equal(escondido, "***.982.247-**");
   assert.ok(!escondido.includes("529"), "os tres primeiros digitos somem");
   assert.ok(!escondido.includes("25"), "os digitos verificadores somem");
-
-  const rg = ocultarRg("123456789");
-  assert.equal(rg, "*******89");
-  assert.ok(!rg.includes("1234567"));
-});
-
-test("RG e normalizado sem pontuacao e em maiusculas", () => {
-  assert.equal(normalizarRg("12.345.678-x"), "12345678X");
 });
 
 test("busca remove caracteres especiais de filtro", () => {

@@ -27,7 +27,6 @@ const LOTE = 1000;
 type Linha = {
   nome_completo: string;
   cpf: string;
-  rg: string;
   celular: string;
   email: string;
   data_inscricao: string;
@@ -41,7 +40,7 @@ async function buscarTodos(): Promise<Linha[]> {
   for (let inicio = 0; ; inicio += LOTE) {
     const { data, error } = await supabase
       .from("inscricoes")
-      .select("nome_completo, cpf, rg, celular, email, data_inscricao")
+      .select("nome_completo, cpf, celular, email, data_inscricao")
       .order("data_inscricao", { ascending: false })
       .range(inicio, inicio + LOTE - 1);
 
@@ -104,7 +103,6 @@ export async function GET() {
   aba.columns = [
     { header: "Nome completo", key: "nome", width: 38 },
     { header: "CPF", key: "cpf", width: 18 },
-    { header: "RG", key: "rg", width: 16 },
     { header: "Celular", key: "celular", width: 20 },
     { header: "E-mail", key: "email", width: 34 },
     { header: "Data da inscrição", key: "data", width: 18 },
@@ -129,7 +127,6 @@ export async function GET() {
       nome: linha.nome_completo,
       // Texto, para o Excel nao comer o zero da frente nem virar numero.
       cpf: mascararCpf(linha.cpf),
-      rg: linha.rg,
       celular: mascararCelular(linha.celular),
       email: linha.email,
       data: formatarData(linha.data_inscricao),
@@ -141,11 +138,10 @@ export async function GET() {
     if (numero === 1) return;
     linha.alignment = { vertical: "middle" };
     linha.getCell("cpf").numFmt = "@";
-    linha.getCell("rg").numFmt = "@";
     linha.getCell("celular").numFmt = "@";
   });
 
-  aba.autoFilter = { from: "A1", to: "G1" };
+  aba.autoFilter = { from: "A1", to: "F1" };
 
   const arquivo = await planilha.xlsx.writeBuffer();
 

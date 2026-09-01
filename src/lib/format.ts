@@ -37,21 +37,6 @@ export function ocultarCpf(cpfDigitos: string): string {
   return `***.${d.slice(3, 6)}.${d.slice(6, 9)}-**`;
 }
 
-/** RG mascarado para a tabela: mostra apenas os 2 ultimos caracteres. */
-export function ocultarRg(rg: string): string {
-  const limpo = (rg ?? "").trim();
-  if (limpo.length <= 2) return "*".repeat(Math.max(limpo.length, 4));
-  return `${"*".repeat(limpo.length - 2)}${limpo.slice(-2)}`;
-}
-
-/** Guarda o RG normalizado: sem pontos/tracos/espacos e em maiusculas. */
-export function normalizarRg(valor: string): string {
-  return (valor ?? "")
-    .toUpperCase()
-    .replace(/[^0-9A-Z]/g, "")
-    .slice(0, 20);
-}
-
 export function normalizarEmail(valor: string): string {
   return (valor ?? "").trim().toLowerCase();
 }

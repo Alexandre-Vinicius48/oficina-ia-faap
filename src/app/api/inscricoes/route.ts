@@ -101,7 +101,6 @@ export async function POST(request: Request) {
   const { error } = await supabase.from("inscricoes").insert({
     nome_completo: dados.nome_completo,
     cpf: dados.cpf, // somente números
-    rg: dados.rg,
     celular: dados.celular, // somente números
     email: dados.email,
     consentimento_lgpd: true,
