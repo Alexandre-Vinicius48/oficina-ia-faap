@@ -129,6 +129,13 @@ export const Icones = {
       <circle cx="12" cy="12" r="2.8" />
     </Svg>
   ),
+  lixeira: (p: Props) => (
+    <Svg {...p}>
+      <path d="M4.5 7h15M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7" />
+      <path d="M6.5 7v12.3a1.7 1.7 0 0 0 1.7 1.7h7.6a1.7 1.7 0 0 0 1.7-1.7V7" />
+      <path d="M10.2 11v6M13.8 11v6" />
+    </Svg>
+  ),
   olhoFechado: (p: Props) => (
     <Svg {...p}>
       <path d="M3 3l18 18" />

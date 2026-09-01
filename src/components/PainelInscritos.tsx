@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icone } from "@/components/Icones";
+import { DialogoConfirmacao } from "@/components/DialogoConfirmacao";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { NOME_ARQUIVO_EXCEL } from "@/config/oficina";
 import { formatarData, formatarHora, mascararCelular } from "@/lib/format";
@@ -46,6 +47,10 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
   const [erro, setErro] = useState<string | null>(null);
   const [baixando, setBaixando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
+
+  // Inscrito escolhido para exclusao. Enquanto for null, a janela fica fechada.
+  const [paraExcluir, setParaExcluir] = useState<Inscrito | null>(null);
+  const [excluindo, setExcluindo] = useState(false);
 
   const requisicaoAtual = useRef(0);
 
@@ -129,6 +134,47 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
       setAviso("Não foi possível baixar a planilha. Verifique sua conexão.");
     } finally {
       setBaixando(false);
+    }
+  }
+
+  async function confirmarExclusao() {
+    if (!paraExcluir || excluindo) return;
+
+    setExcluindo(true);
+    setAviso(null);
+
+    try {
+      const resposta = await fetch("/api/admin/inscricoes/excluir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ id: paraExcluir.id }),
+      });
+
+      if (resposta.status === 401 || resposta.status === 403) {
+        router.replace("/admin");
+        return;
+      }
+
+      if (!resposta.ok) {
+        const corpo: { erro?: string } = await resposta.json().catch(() => ({}));
+        setAviso(corpo.erro ?? "Não foi possível excluir a inscrição.");
+        return;
+      }
+
+      const nome = paraExcluir.nome_completo;
+      setParaExcluir(null);
+      setAviso(`Inscrição de ${nome} excluída.`);
+
+      // Recarrega a lista. Se a página tiver ficado vazia, volta uma página.
+      const paginaAlvo =
+        dados.itens.length === 1 && pagina > 1 ? pagina - 1 : pagina;
+      if (paginaAlvo !== pagina) setPagina(paginaAlvo);
+      else await carregar(busca, pagina, completo);
+    } catch {
+      setAviso("Sem conexão com a internet. Tente novamente.");
+    } finally {
+      setExcluindo(false);
     }
   }
 
@@ -316,6 +362,15 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
                   </dd>
                 </div>
               </dl>
+
+              <button
+                type="button"
+                onClick={() => setParaExcluir(item)}
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-erro-600 bg-white px-5 py-3 text-[1.02rem] font-extrabold text-erro-700 transition hover:bg-erro-50"
+              >
+                <Icone nome="lixeira" className="h-6 w-6" />
+                Excluir inscrição
+              </button>
             </li>
           ))}
         </ul>
@@ -338,6 +393,9 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
                     {titulo}
                   </th>
                 ))}
+                <th scope="col" className="border-b-2 border-borda px-4 py-4">
+                  <span className="sr-only">Ações</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -361,6 +419,17 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
                   <td className="px-4 py-4 break-all text-tinta">{item.email}</td>
                   <td className="px-4 py-4 whitespace-nowrap text-tinta">
                     {formatarData(item.data_inscricao)}
+                  </td>
+                  <td className="px-4 py-4">
+                    <button
+                      type="button"
+                      onClick={() => setParaExcluir(item)}
+                      aria-label={`Excluir a inscrição de ${item.nome_completo}`}
+                      title="Excluir inscrição"
+                      className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-borda bg-white text-erro-700 transition hover:border-erro-600 hover:bg-erro-50"
+                    >
+                      <Icone nome="lixeira" className="h-6 w-6" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -408,6 +477,19 @@ export function PainelInscritos({ nomeAdmin }: { nomeAdmin: string }) {
       <p className="text-[0.98rem] text-tinta-suave">
         Você está no painel como <strong className="text-tinta">{nomeAdmin}</strong>.
       </p>
+
+      <DialogoConfirmacao
+        aberto={paraExcluir !== null}
+        titulo="Excluir esta inscrição?"
+        descricao="A inscrição será apagada do banco de dados definitivamente. Não é possível desfazer."
+        detalhe={paraExcluir?.nome_completo}
+        textoConfirmar="Sim, excluir"
+        processando={excluindo}
+        aoConfirmar={confirmarExclusao}
+        aoCancelar={() => {
+          if (!excluindo) setParaExcluir(null);
+        }}
+      />
     </div>
   );
 }

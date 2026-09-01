@@ -17,12 +17,14 @@ export function ModalPrivacidade({
 }) {
   const dialogo = useRef<HTMLDialogElement>(null);
 
+  // Sem lista de dependencias: reconcilia o <dialog> com o estado a cada
+  // render, para a janela nunca ficar travada fora de sincronia.
   useEffect(() => {
     const elemento = dialogo.current;
     if (!elemento) return;
     if (aberto && !elemento.open) elemento.showModal();
     if (!aberto && elemento.open) elemento.close();
-  }, [aberto]);
+  });
 
   return (
     <dialog
