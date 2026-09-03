@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Cabecalho, Rodape } from "@/components/Marca";
 import { Carrossel } from "@/components/Carrossel";
+import { Videos } from "@/components/Videos";
 import { Icone, type NomeIcone } from "@/components/Icones";
 import { LogosParceria, SeloParceria } from "@/components/Logos";
 import { OFICINA } from "@/config/oficina";
@@ -345,7 +346,10 @@ export default function PaginaInicial() {
           </div>
         </section>
 
-        {/* =================== 7. INSCRIÇÃO =================== */}
+        {/* =================== 7. VÍDEOS =================== */}
+        <Videos />
+
+        {/* =================== 8. INSCRIÇÃO =================== */}
         <section className="relative overflow-hidden bg-marca-900 py-16 text-white lg:py-20">
           <div
             aria-hidden="true"

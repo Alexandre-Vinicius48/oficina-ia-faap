@@ -147,6 +147,31 @@ export const OFICINA = {
     },
   ],
 
+  /**
+   * Vídeos da página inicial.
+   * Os arquivos ficam na pasta public/videos. Para trocar um vídeo, salve o
+   * novo arquivo lá (em .mp4) e mude o nome abaixo.
+   * Deixe a lista vazia — videos: [] — para a seção não aparecer no site.
+   */
+  videos: [
+    {
+      arquivo: "/videos/apresentacao.mp4",
+      poster: "/videos/poster-apresentacao.jpg",
+      titulo: "Um convite para você",
+      descricao:
+        "Uma aluna da FAAP conta, em poucos segundos, o que você vai encontrar na oficina.",
+      duracao: "20 segundos",
+    },
+    {
+      arquivo: "/videos/oficina.mp4",
+      poster: "/videos/poster-oficina.jpg",
+      titulo: "Criando imagens com Inteligência Artificial",
+      descricao:
+        "Veja uma participante criando uma imagem do zero, com um aluno da FAAP ao lado.",
+      duracao: "28 segundos",
+    },
+  ],
+
   /** Galeria institucional da página inicial. */
   galeria: [
     {
