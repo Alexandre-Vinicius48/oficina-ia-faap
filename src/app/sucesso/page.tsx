@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { Cabecalho, Rodape } from "@/components/Marca";
 import { SeloParceria } from "@/components/Logos";
 import { Icone } from "@/components/Icones";
+import { Comemoracao } from "@/components/Comemoracao";
 import { OFICINA } from "@/config/oficina";
 
 export const metadata: Metadata = {
@@ -23,7 +24,12 @@ export default async function PaginaSucesso() {
     <>
       <Cabecalho comBotao={false} />
 
-      <main id="conteudo" className="flex-1">
+      {/* Só comemora quem acabou de enviar a inscrição. Quem abre este
+          endereço direto vê a página sem a animação — festejar por quem não
+          fez nada seria estranho. */}
+      <Comemoracao ativo={veioDoFormulario} />
+
+      <main id="conteudo" className="relative flex-1">
         <div className="animacao-surgir mx-auto max-w-2xl px-5 py-14 text-center sm:py-20">
           <span className="mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-full bg-sucesso-50 text-sucesso-700">
             <Icone nome="check" className="h-14 w-14" />

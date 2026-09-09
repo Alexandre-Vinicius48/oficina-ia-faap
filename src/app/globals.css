@@ -157,6 +157,70 @@ input[type="checkbox"] {
   height: 3rem;
 }
 
+/* --------------------------------------------------------------------------
+   Comemoracao da inscricao: confetes e baloes
+   --------------------------------------------------------------------------
+   Só entra na tela de confirmacao, dura poucos segundos e some sozinha.
+   Quem pediu menos animacao no sistema operacional nao ve nada: a regra
+   de prefers-reduced-motion la em cima ja zera as duracoes, e o componente
+   tambem nem chega a montar os elementos.
+   -------------------------------------------------------------------------- */
+@keyframes confete-cai {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--deriva, 0), 108vh, 0) rotate(var(--giro, 540deg));
+  }
+}
+
+@keyframes balao-sobe {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18vh, 0);
+  }
+  12% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--deriva, 0), -115vh, 0);
+  }
+}
+
+/* Balanco lateral suave, aplicado ao elemento de dentro para nao brigar
+   com a subida do elemento de fora. */
+@keyframes balao-balanca {
+  0%, 100% { transform: rotate(-5deg); }
+  50%      { transform: rotate(5deg); }
+}
+
+.confete {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  animation: confete-cai var(--duracao, 3.6s) cubic-bezier(0.25, 0.6, 0.55, 1) var(--atraso, 0s) both;
+}
+
+.balao {
+  position: absolute;
+  bottom: 0;
+  animation: balao-sobe var(--duracao, 5s) ease-in var(--atraso, 0s) both;
+}
+
+.balao > svg {
+  animation: balao-balanca 2.6s ease-in-out infinite;
+  transform-origin: 50% 0%;
+}
+
 @media print {
   .sem-impressao { display: none !important; }
 }
