@@ -21,9 +21,12 @@ export const dynamic = "force-dynamic";
  */
 
 // Quantos envios um mesmo aparelho pode fazer em 10 minutos.
-// Valor generoso de proposito: em um centro comunitario varias pessoas se
-// inscrevem pela mesma rede Wi-Fi e nao podem ser bloqueadas.
-const MAXIMO_ENVIOS = 20;
+// Valor generoso de proposito. Quem realmente barra robo aqui e o
+// campo-armadilha e a checagem de tempo, logo abaixo; este limite e so uma
+// rede de seguranca. Ja o cenario legitimo e comum: alunos ajudando varias
+// pessoas idosas a se inscreverem no local, todos pela mesma rede Wi-Fi,
+// aparecendo para o servidor como um aparelho so.
+const MAXIMO_ENVIOS = 50;
 const JANELA_MS = 10 * 60 * 1000;
 
 // Tempo minimo entre abrir o formulario e enviar. Gente digitando leva muito

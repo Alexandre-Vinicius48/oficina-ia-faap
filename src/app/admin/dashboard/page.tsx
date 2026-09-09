@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { administradorAtual } from "@/lib/auth";
 import { PainelInscritos } from "@/components/PainelInscritos";
+import { PainelAulas } from "@/components/PainelAulas";
 import { LogosParceria } from "@/components/Logos";
 
 export const metadata: Metadata = {
@@ -33,6 +34,10 @@ export default async function PaginaDashboard() {
           <h1 className="mb-8 text-[1.8rem] font-extrabold text-marca-900">
             Painel de inscritos
           </h1>
+          <PainelAulas />
+
+          <div className="my-12 border-t-2 border-borda" />
+
           <PainelInscritos nomeAdmin={admin.nome ?? admin.email} />
         </div>
       </main>

@@ -119,3 +119,52 @@ export function validarFormulario(campos: CamposFormulario): {
   }
   return { ok: false, erros };
 }
+
+/* ===========================================================================
+   AVALIACAO DA AULA
+   =========================================================================== */
+
+/** Quantas palavras o comentario pode ter. */
+export const LIMITE_DE_PALAVRAS = 100;
+
+export function contarPalavras(texto: string): number {
+  const limpo = (texto ?? "").trim();
+  if (limpo === "") return 0;
+  return limpo.split(/\s+/).length;
+}
+
+/** Dados que a pessoa envia para entrar na area de avaliacao. */
+export const entradaAvaliacaoSchema = z.object({
+  celular: z
+    .string({ error: "Digite seu celular." })
+    .transform(somenteDigitos)
+    .refine(celularEhValido, {
+      message: "Digite o celular com DDD, o mesmo que você usou na inscrição.",
+    }),
+
+  codigo: z
+    .string({ error: "Digite o código da aula." })
+    .transform((v) => somenteDigitos(v))
+    .refine((v) => v.length === 4, {
+      message: "O código tem 4 números. Ele aparece na tela da sala.",
+    }),
+});
+
+/** Dados da avaliacao em si. */
+export const avaliacaoSchema = z.object({
+  nota: z
+    .number({ error: "Escolha um rosto para dar sua nota." })
+    .int()
+    .min(1, { message: "Escolha um rosto para dar sua nota." })
+    .max(5, { message: "Escolha um rosto para dar sua nota." }),
+
+  comentario: z
+    .string()
+    .max(1200, { message: "Seu comentário ficou muito longo." })
+    .transform((v) => v.trim())
+    .refine((v) => contarPalavras(v) <= LIMITE_DE_PALAVRAS, {
+      message: `Escreva no máximo ${LIMITE_DE_PALAVRAS} palavras.`,
+    })
+    .optional()
+    .default(""),
+});

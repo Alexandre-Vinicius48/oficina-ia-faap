@@ -24,7 +24,9 @@ export function dentroDoLimite(
   identificador: string,
   maximo: number,
   janelaMs: number,
+  opcoes: { contar?: boolean } = {},
 ): { permitido: boolean; tenteEmSegundos: number } {
+  const { contar = true } = opcoes;
   const agora = Date.now();
 
   if (registros.size > LIMITE_DE_MEMORIA) limparExpirados(agora);
@@ -32,7 +34,7 @@ export function dentroDoLimite(
   const atual = registros.get(identificador);
 
   if (!atual || atual.expiraEm <= agora) {
-    registros.set(identificador, { contagem: 1, expiraEm: agora + janelaMs });
+    if (contar) registros.set(identificador, { contagem: 1, expiraEm: agora + janelaMs });
     return { permitido: true, tenteEmSegundos: 0 };
   }
 
@@ -43,8 +45,26 @@ export function dentroDoLimite(
     };
   }
 
-  atual.contagem += 1;
+  if (contar) atual.contagem += 1;
   return { permitido: true, tenteEmSegundos: 0 };
+}
+
+/**
+ * Marca uma tentativa FRACASSADA.
+ *
+ * Usado onde o limite serve para barrar quem fica adivinhando, e nao para
+ * limitar uso legitimo. Numa sala de aula, dezenas de pessoas entram pela
+ * mesma rede Wi-Fi e apareceriam para o servidor como o mesmo aparelho: se
+ * cada acerto contasse, a turma se bloquearia sozinha. Contando so os erros,
+ * quem esta tentando adivinhar telefone ou codigo trava rapido, e quem digita
+ * certo passa sempre.
+ */
+export function registrarFalha(
+  identificador: string,
+  maximo: number,
+  janelaMs: number,
+): void {
+  dentroDoLimite(identificador, maximo, janelaMs, { contar: true });
 }
 
 /**

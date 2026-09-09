@@ -95,12 +95,20 @@ export function Rodape() {
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-borda pt-6 text-[0.95rem] text-tinta-suave">
           <p>Projeto acadêmico — {OFICINA.subtitulo}.</p>
-          <Link
-            href="/admin"
-            className="font-semibold text-tinta-suave underline underline-offset-4 hover:text-marca-700"
-          >
-            Área dos responsáveis
-          </Link>
+          <span className="flex flex-wrap gap-5">
+            <Link
+              href="/avaliar"
+              className="font-semibold text-tinta-suave underline underline-offset-4 hover:text-marca-700"
+            >
+              Área do participante
+            </Link>
+            <Link
+              href="/admin"
+              className="font-semibold text-tinta-suave underline underline-offset-4 hover:text-marca-700"
+            >
+              Área dos responsáveis
+            </Link>
+          </span>
         </div>
       </div>
     </footer>
