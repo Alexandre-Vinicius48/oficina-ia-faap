@@ -71,6 +71,12 @@ export default function PaginaInicial() {
                 </Link>
                 <p className="text-[1.02rem] text-tinta-suave">
                   Leva menos de 2 minutos.
+                  {OFICINA.avisoDeVagas && (
+                    <>
+                      <br />
+                      {OFICINA.avisoDeVagas}
+                    </>
+                  )}
                 </p>
               </div>
 
@@ -365,8 +371,9 @@ export default function PaginaInicial() {
               Vamos aprender juntos?
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-[1.18rem] leading-relaxed text-marca-100">
-              A inscrição é gratuita e leva menos de dois minutos. Guardamos
-              seus dados com segurança e usamos apenas para organizar a oficina.
+              A inscrição é gratuita e leva menos de dois minutos.{" "}
+              {OFICINA.avisoDeVagas} Guardamos seus dados com segurança e
+              usamos apenas para organizar a oficina.
             </p>
 
             <Link

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { administradorAtual } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { dentroDoLimite } from "@/lib/limite-requisicoes";
+import { ROSTOS } from "@/lib/escala";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,8 +64,10 @@ export async function POST(request: Request) {
   }
 
   const itens = data ?? [];
-  const distribuicao = [1, 2, 3, 4, 5].map(
-    (n) => itens.filter((i) => i.nota === n).length,
+  // Derivada da escala, e nao fixa: se o numero de rostos mudar, o grafico
+  // do painel acompanha sozinho.
+  const distribuicao = ROSTOS.map(
+    (rosto) => itens.filter((i) => i.nota === rosto.nota).length,
   );
 
   return json({ itens, distribuicao }, 200);

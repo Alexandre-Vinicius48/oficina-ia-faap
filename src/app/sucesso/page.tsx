@@ -7,7 +7,7 @@ import { Icone } from "@/components/Icones";
 import { OFICINA } from "@/config/oficina";
 
 export const metadata: Metadata = {
-  title: "Matrícula realizada",
+  title: "Inscrição enviada",
   robots: { index: false, follow: false },
 };
 
@@ -30,21 +30,27 @@ export default async function PaginaSucesso() {
           </span>
 
           <h1 className="text-[2rem] leading-tight font-extrabold text-sucesso-700 sm:text-[2.5rem]">
-            Matrícula realizada com sucesso!
+            Inscrição enviada com sucesso!
           </h1>
 
           <p className="mt-6 text-[1.2rem] leading-relaxed font-semibold text-tinta">
-            Obrigado por participar da Oficina de Inteligência Artificial —{" "}
-            {OFICINA.subtitulo}.
+            Recebemos seus dados. Obrigado pelo interesse na Oficina de
+            Inteligência Artificial — {OFICINA.subtitulo}.
           </p>
 
           <div className="mt-8 rounded-2xl border-2 border-marca-200 bg-white p-6 text-left shadow-sm">
             <p className="text-[1.15rem] leading-relaxed text-tinta">
               <strong className="font-extrabold">
-                Em breve entraremos em contato com mais informações.
+                Sua vaga ainda não está confirmada.
               </strong>{" "}
-              {OFICINA.encontro.observacao}
+              As vagas são limitadas. Vamos entrar em contato por telefone ou
+              e-mail para confirmar sua participação.
             </p>
+            {OFICINA.encontro.observacao && (
+              <p className="mt-4 text-[1.1rem] leading-relaxed text-tinta-suave">
+                {OFICINA.encontro.observacao}
+              </p>
+            )}
           </div>
 
           {!veioDoFormulario && (

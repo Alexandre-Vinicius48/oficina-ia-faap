@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { NOTA_MAXIMA } from "@/lib/escala";
 import { normalizarEmail, normalizarNome, somenteDigitos } from "@/lib/format";
 
 /**
@@ -156,7 +157,7 @@ export const avaliacaoSchema = z.object({
     .number({ error: "Escolha um rosto para dar sua nota." })
     .int()
     .min(1, { message: "Escolha um rosto para dar sua nota." })
-    .max(5, { message: "Escolha um rosto para dar sua nota." }),
+    .max(NOTA_MAXIMA, { message: "Escolha um rosto para dar sua nota." }),
 
   comentario: z
     .string()

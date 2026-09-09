@@ -31,7 +31,7 @@ export default function PaginaInscricao() {
               </h1>
               <p className="mt-4 text-[1.15rem] leading-relaxed text-tinta-suave">
                 Preencha os campos abaixo. É rápido, gratuito e leva menos de
-                2 minutos.
+                2 minutos. {OFICINA.avisoDeVagas}
               </p>
             </div>
           </div>

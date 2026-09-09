@@ -303,18 +303,18 @@ export function FormularioInscricao() {
                 className="h-7 w-7 animate-spin rounded-full border-4 border-white/40 border-t-white"
                 aria-hidden="true"
               />
-              Enviando sua matrícula...
+              Enviando sua inscrição...
             </>
           ) : (
             <>
-              REALIZAR MATRÍCULA
+              ENVIAR INSCRIÇÃO
               <Icone nome="seta" className="h-7 w-7" />
             </>
           )}
         </button>
 
         <p aria-live="polite" className="sr-only">
-          {enviando ? "Enviando sua matrícula, aguarde." : ""}
+          {enviando ? "Enviando sua inscrição, aguarde." : ""}
         </p>
 
         <p className="text-center text-[1rem] text-tinta-suave">

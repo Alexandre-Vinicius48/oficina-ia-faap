@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DialogoConfirmacao } from "@/components/DialogoConfirmacao";
-import { ROSTOS } from "@/components/EscalaRostos";
+import { ROSTOS } from "@/lib/escala";
 import { formatarData, formatarHora } from "@/lib/format";
 
 type Aula = {

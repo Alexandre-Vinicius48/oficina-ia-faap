@@ -1,5 +1,9 @@
 "use client";
 
+import { ROSTOS, type Rosto } from "@/lib/escala";
+
+export { ROSTOS, type Rosto };
+
 /**
  * Escala Likert de 5 pontos, com rostos.
  *
@@ -13,27 +17,12 @@
  *  · alvos grandes, com area de toque folgada.
  */
 
-export type Rosto = {
-  nota: number;
-  rotulo: string;
-  cor: string;
-};
-
-export const ROSTOS: Rosto[] = [
-  { nota: 1, rotulo: "Muito ruim", cor: "var(--color-erro-600)" },
-  { nota: 2, rotulo: "Ruim", cor: "var(--color-vida-laranja)" },
-  { nota: 3, rotulo: "Regular", cor: "var(--color-vida-amarelo)" },
-  { nota: 4, rotulo: "Bom", cor: "var(--color-vida-verde)" },
-  { nota: 5, rotulo: "Muito bom", cor: "var(--color-sucesso-700)" },
-];
-
 /** Caminho da boca para cada nota: da mais triste a mais sorridente. */
 const BOCAS: Record<number, string> = {
   1: "M 22 46 Q 32 34 42 46",
-  2: "M 22 44 Q 32 38 42 44",
-  3: "M 22 42 L 42 42",
-  4: "M 22 40 Q 32 46 42 40",
-  5: "M 21 38 Q 32 50 43 38",
+  2: "M 22 42 L 42 42",
+  3: "M 22 40 Q 32 46 42 40",
+  4: "M 21 38 Q 32 50 43 38",
 };
 
 function Rostinho({ nota, cor }: { nota: number; cor: string }) {
@@ -80,7 +69,7 @@ export function EscalaRostos({
           largura — abaixo do minimo recomendado, e apertado demais para quem
           tem a mao tremida. A partir de tela media eles voltam a ficar lado
           a lado, onde ha espaco de sobra. */}
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-5 sm:gap-3">
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-4 sm:gap-3">
         {ROSTOS.map((rosto) => {
           const escolhido = valor === rosto.nota;
           return (

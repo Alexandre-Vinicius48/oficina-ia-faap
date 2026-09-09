@@ -17,6 +17,12 @@ export const OFICINA = {
   /** Aparece logo abaixo do titulo. */
   subtitulo: "FAAP + Bairro com Vida",
 
+  /**
+   * Aviso sobre a quantidade de vagas, mostrado junto aos botoes de inscricao.
+   * Deixe "" para nao aparecer.
+   */
+  avisoDeVagas: "As vagas são limitadas e a participação é confirmada depois.",
+
   /** Frase de destaque. */
   chamada: "Aprenda a usar a Inteligência Artificial de forma simples, criativa e prática.",
 
@@ -38,7 +44,9 @@ export const OFICINA = {
     data: "",       // exemplo: "Sábado, 10 de outubro de 2026"
     horario: "",    // exemplo: "das 14h às 17h"
     local: "",      // exemplo: "FAAP — Rua Alagoas, 903 — Higienópolis, São Paulo"
-    observacao: "A data e o local serão confirmados por telefone ou e-mail.",
+    // Recado extra na tela de confirmação. Deixe "" para não aparecer.
+    // Exemplo: "Chegue 15 minutos antes para o credenciamento."
+    observacao: "",
   },
 
   /** Contato mostrado no rodapé. Deixe "" para esconder. */
@@ -136,14 +144,14 @@ export const OFICINA = {
         "São quatro campos simples: nome, CPF, celular e e-mail. Leva menos de dois minutos.",
     },
     {
-      titulo: "Receba a confirmação",
+      titulo: "Receba o comprovante de envio",
       texto:
-        "Assim que enviar, sua vaga fica registrada e aparece a confirmação na tela.",
+        "A tela confirma que recebemos sua inscrição. A vaga ainda não está garantida neste momento.",
     },
     {
-      titulo: "Aguarde nosso contato",
+      titulo: "Aguarde a confirmação da vaga",
       texto:
-        "A organização entra em contato por telefone ou e-mail com a data, o horário e o local.",
+        "As vagas são limitadas. A organização entra em contato por telefone ou e-mail para confirmar sua participação, com data, horário e local.",
     },
   ],
 
