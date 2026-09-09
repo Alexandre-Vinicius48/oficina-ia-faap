@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Icone } from "@/components/Icones";
 import { DialogoConfirmacao } from "@/components/DialogoConfirmacao";
 import { ROSTOS } from "@/lib/escala";
 import { formatarData, formatarHora } from "@/lib/format";
@@ -42,6 +43,9 @@ export function PainelAulas() {
   const [endereco, setEndereco] = useState<string | null>(null);
 
   const [paraFechar, setParaFechar] = useState<Aula | null>(null);
+
+  const [respostaParaExcluir, setRespostaParaExcluir] = useState<Avaliacao | null>(null);
+  const [excluindoResposta, setExcluindoResposta] = useState(false);
 
   const [aulaAberta, setAulaAberta] = useState<Aula | null>(null);
   const [avaliacoes, setAvaliacoes] = useState<Avaliacao[] | null>(null);
@@ -113,9 +117,8 @@ export function PainelAulas() {
     setOcupado(false);
   }
 
-  async function verAvaliacoes(aula: Aula) {
-    setAulaAberta(aula);
-    setAvaliacoes(null);
+  async function carregarAvaliacoes(aula: Aula, limparAntes = true) {
+    if (limparAntes) setAvaliacoes(null);
     const resposta = await fetch("/api/admin/avaliacoes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -129,6 +132,47 @@ export function PainelAulas() {
     const dados = await resposta.json();
     setAvaliacoes(dados.itens ?? []);
     setDistribuicao(dados.distribuicao ?? []);
+  }
+
+  async function verAvaliacoes(aula: Aula) {
+    setAulaAberta(aula);
+    await carregarAvaliacoes(aula);
+  }
+
+  async function confirmarExclusaoDaResposta() {
+    if (!respostaParaExcluir || excluindoResposta || !aulaAberta) return;
+
+    setExcluindoResposta(true);
+    setErro(null);
+
+    try {
+      const resposta = await fetch("/api/admin/avaliacoes/excluir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ id: respostaParaExcluir.id }),
+      });
+
+      if (resposta.status === 401 || resposta.status === 403) {
+        router.replace("/admin");
+        return;
+      }
+      if (!resposta.ok) {
+        const c = await resposta.json().catch(() => ({}));
+        setErro(c.erro ?? "Não foi possível excluir a resposta.");
+        return;
+      }
+
+      setRespostaParaExcluir(null);
+      // Recarrega a lista e os números: total e média mudaram.
+      await carregarAvaliacoes(aulaAberta, false);
+      const dados = await chamar({ acao: "listar" });
+      if (dados) setAulas(dados.aulas ?? []);
+    } catch {
+      setErro("Sem conexão com a internet. Tente novamente.");
+    } finally {
+      setExcluindoResposta(false);
+    }
   }
 
   const abertaAgora = aulas.find((a) => a.aberta) ?? null;
@@ -304,29 +348,51 @@ export function PainelAulas() {
                       })}
                     </ul>
 
-                    {avaliacoes.filter((a) => a.comentario).length === 0 ? (
+                    {/* Todas as respostas aparecem, inclusive as que vieram
+                        só com o rostinho. Se listássemos apenas as que têm
+                        comentário, uma resposta sem texto — um teste, por
+                        exemplo — não teria como ser apagada. */}
+                    {avaliacoes.length === 0 ? (
                       <p className="text-[1.05rem] text-tinta-suave">
-                        Ninguém escreveu comentário nesta aula.
+                        Nenhuma resposta nesta aula.
                       </p>
                     ) : (
                       <ul className="space-y-3">
-                        {avaliacoes
-                          .filter((a) => a.comentario)
-                          .map((a) => (
-                            <li
-                              key={a.id}
-                              className="rounded-2xl border-2 border-borda bg-papel-alt p-4"
-                            >
-                              <p className="text-[1.05rem] leading-relaxed text-tinta">
-                                “{a.comentario}”
-                              </p>
+                        {avaliacoes.map((a) => (
+                          <li
+                            key={a.id}
+                            className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border-2 border-borda bg-papel-alt p-4"
+                          >
+                            <div className="min-w-[14rem] flex-1">
+                              {a.comentario ? (
+                                <p className="text-[1.05rem] leading-relaxed text-tinta">
+                                  “{a.comentario}”
+                                </p>
+                              ) : (
+                                <p className="text-[1.05rem] text-tinta-suave italic">
+                                  Sem comentário
+                                </p>
+                              )}
                               <p className="mt-2 text-[0.95rem] text-tinta-suave">
-                                {ROSTOS[a.nota - 1]?.rotulo} ·{" "}
-                                {formatarData(a.created_at)} às{" "}
+                                <strong className="font-extrabold text-tinta">
+                                  {ROSTOS[a.nota - 1]?.rotulo}
+                                </strong>{" "}
+                                · {formatarData(a.created_at)} às{" "}
                                 {formatarHora(a.created_at)}
                               </p>
-                            </li>
-                          ))}
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setRespostaParaExcluir(a)}
+                              aria-label={`Excluir a resposta de ${formatarData(a.created_at)} às ${formatarHora(a.created_at)}`}
+                              title="Excluir resposta"
+                              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-borda bg-white text-erro-700 transition hover:border-erro-600 hover:bg-erro-50"
+                            >
+                              <Icone nome="lixeira" className="h-6 w-6" />
+                            </button>
+                          </li>
+                        ))}
                       </ul>
                     )}
 
@@ -341,6 +407,25 @@ export function PainelAulas() {
           </li>
         ))}
       </ul>
+
+      <DialogoConfirmacao
+        aberto={respostaParaExcluir !== null}
+        titulo="Excluir esta resposta?"
+        descricao="A resposta será apagada do banco de dados definitivamente. Não é possível desfazer."
+        detalhe={
+          respostaParaExcluir
+            ? respostaParaExcluir.comentario
+              ? `“${respostaParaExcluir.comentario}”`
+              : `${ROSTOS[respostaParaExcluir.nota - 1]?.rotulo}, sem comentário`
+            : undefined
+        }
+        textoConfirmar="Sim, excluir"
+        processando={excluindoResposta}
+        aoConfirmar={confirmarExclusaoDaResposta}
+        aoCancelar={() => {
+          if (!excluindoResposta) setRespostaParaExcluir(null);
+        }}
+      />
 
       <DialogoConfirmacao
         aberto={paraFechar !== null}
