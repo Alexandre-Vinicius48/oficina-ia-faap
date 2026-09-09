@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Suspense } from "react";
 import { Cabecalho, Rodape } from "@/components/Marca";
 import { AreaParticipante } from "@/components/AreaParticipante";
@@ -6,7 +7,7 @@ import { Icone } from "@/components/Icones";
 import { cronograma } from "@/lib/consulta-aulas";
 
 export const metadata: Metadata = {
-  title: "Área do participante",
+  title: "Área do Convidado",
   robots: { index: false, follow: false },
 };
 
@@ -34,14 +35,25 @@ export default async function PaginaAvaliar() {
       <Cabecalho comBotao={false} />
 
       <main id="conteudo" className="flex-1">
-        <section className="relative overflow-hidden border-b-2 border-borda bg-gradient-to-b from-marca-50 to-papel">
-          <div aria-hidden="true" className="textura-pontos absolute inset-0 opacity-40" />
-          <div className="relative mx-auto max-w-6xl px-5 py-10 sm:py-14">
+        {/* O banner traz o titulo desenhado. Em tela estreita as letras dentro
+            dele ficam pequenas demais para o nosso publico, entao o titulo
+            tambem aparece como texto de verdade logo abaixo — grande, e lido
+            por leitores de tela. */}
+        <section className="border-b-2 border-borda bg-white">
+          <div className="mx-auto max-w-6xl px-0 sm:px-5 sm:pt-8">
+            <Image
+              src="/banners/area-convidado.jpg"
+              alt="Área do Convidado — Bairro com Vida. FAAP, Prática Extensionista."
+              width={2172}
+              height={724}
+              priority
+              sizes="(max-width: 640px) 100vw, 1152px"
+              className="h-auto w-full sm:rounded-3xl"
+            />
+          </div>
+
+          <div className="mx-auto max-w-6xl px-5 py-8 sm:py-10">
             <div className="max-w-2xl">
-              <p className="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-marca-200 bg-white px-5 py-2 text-[0.9rem] font-bold tracking-[0.1em] text-marca-700 uppercase">
-                <span className="h-2.5 w-2.5 rounded-full bg-acolhe-600" />
-                Área do participante
-              </p>
               <h1 className="text-[2rem] leading-tight font-extrabold text-marca-900 sm:text-[2.5rem]">
                 Avalie a aula de hoje
               </h1>

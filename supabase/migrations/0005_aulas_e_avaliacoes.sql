@@ -116,10 +116,10 @@ create policy "admins_apagam_avaliacoes"
 -- Para mudar tema ou data depois, edite aqui e rode de novo: o "on conflict"
 -- atualiza a linha existente em vez de criar outra.
 insert into public.aulas (numero, tema, data) values
-  (1, 'O que é Inteligência Artificial',     date '2026-10-05'),
-  (2, 'Como criar bons pedidos (prompts)',   date '2026-10-06'),
-  (3, 'Criação de imagens com IA',           date '2026-10-08'),
-  (4, 'Criação de vídeos com IA',            date '2026-10-09')
+  (1, 'Criando e configurando sua conta no ChatGPT',       date '2026-10-05'),
+  (2, 'Como escrever um bom pedido e criar textos',        date '2026-10-06'),
+  (3, 'Gerando imagens com Inteligência Artificial',       date '2026-10-08'),
+  (4, 'Gerando vídeos com Inteligência Artificial',        date '2026-10-09')
 on conflict (numero) do update
   set tema = excluded.tema,
       data = excluded.data;

@@ -100,7 +100,7 @@ export function Rodape() {
               href="/avaliar"
               className="font-semibold text-tinta-suave underline underline-offset-4 hover:text-marca-700"
             >
-              Área do participante
+              Área do Convidado
             </Link>
             <Link
               href="/admin"
