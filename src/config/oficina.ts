@@ -212,5 +212,6 @@ export const OFICINA = {
   ],
 } as const;
 
-/** Nome do arquivo Excel baixado no painel administrativo. */
+/** Nomes dos arquivos Excel baixados no painel administrativo. */
 export const NOME_ARQUIVO_EXCEL = "inscritos_oficina_ia_faap.xlsx";
+export const NOME_ARQUIVO_EXCEL_AVALIACOES = "avaliacoes_oficina_ia_faap.xlsx";

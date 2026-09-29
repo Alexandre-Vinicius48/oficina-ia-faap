@@ -6,6 +6,7 @@ import { Icone } from "@/components/Icones";
 import { DialogoConfirmacao } from "@/components/DialogoConfirmacao";
 import { ROSTOS } from "@/lib/escala";
 import { formatarData, formatarHora } from "@/lib/format";
+import { NOME_ARQUIVO_EXCEL_AVALIACOES } from "@/config/oficina";
 
 type Aula = {
   id: string;
@@ -43,6 +44,9 @@ export function PainelAulas() {
   const [endereco, setEndereco] = useState<string | null>(null);
 
   const [paraFechar, setParaFechar] = useState<Aula | null>(null);
+
+  const [baixando, setBaixando] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
 
   const [respostaParaExcluir, setRespostaParaExcluir] = useState<Avaliacao | null>(null);
   const [excluindoResposta, setExcluindoResposta] = useState(false);
@@ -134,6 +138,45 @@ export function PainelAulas() {
     setDistribuicao(dados.distribuicao ?? []);
   }
 
+  async function baixarExcel() {
+    if (baixando) return;
+    setBaixando(true);
+    setAviso(null);
+    setErro(null);
+
+    try {
+      const resposta = await fetch("/api/admin/exportar-avaliacoes", {
+        cache: "no-store",
+      });
+
+      if (resposta.status === 401 || resposta.status === 403) {
+        router.replace("/admin");
+        return;
+      }
+      if (!resposta.ok) {
+        const c = await resposta.json().catch(() => ({}));
+        setErro(c.erro ?? "Não foi possível gerar a planilha.");
+        return;
+      }
+
+      const arquivo = await resposta.blob();
+      const endereco = URL.createObjectURL(arquivo);
+      const link = document.createElement("a");
+      link.href = endereco;
+      link.download = NOME_ARQUIVO_EXCEL_AVALIACOES;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      // Libera a memoria so depois que o navegador comecou a baixar.
+      setTimeout(() => URL.revokeObjectURL(endereco), 10_000);
+      setAviso("Planilha baixada com sucesso.");
+    } catch {
+      setErro("Sem conexão com a internet. Tente novamente.");
+    } finally {
+      setBaixando(false);
+    }
+  }
+
   async function verAvaliacoes(aula: Aula) {
     setAulaAberta(aula);
     await carregarAvaliacoes(aula);
@@ -176,17 +219,54 @@ export function PainelAulas() {
   }
 
   const abertaAgora = aulas.find((a) => a.aberta) ?? null;
+  const totalDeRespostas = aulas.reduce((s, a) => s + a.totalDeAvaliacoes, 0);
 
   return (
     <section aria-labelledby="titulo-aulas" className="space-y-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 id="titulo-aulas" className="text-[1.4rem] font-extrabold text-marca-900">
           Aulas e avaliações
+          {carregando && (
+            <span className="ml-3 text-[1rem] font-normal text-tinta-suave">
+              Carregando...
+            </span>
+          )}
         </h2>
-        {carregando && (
-          <p className="text-[1rem] text-tinta-suave">Carregando...</p>
-        )}
+
+        <button
+          type="button"
+          onClick={baixarExcel}
+          disabled={baixando || totalDeRespostas === 0}
+          aria-busy={baixando}
+          title={
+            totalDeRespostas === 0
+              ? "Ainda não há respostas para exportar"
+              : undefined
+          }
+          className="flex items-center justify-center gap-3 rounded-2xl bg-sucesso-700 px-6 py-4 text-[1.05rem] font-extrabold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-tinta-suave"
+        >
+          {baixando ? (
+            <>
+              <span
+                className="h-6 w-6 animate-spin rounded-full border-4 border-white/40 border-t-white"
+                aria-hidden="true"
+              />
+              Gerando planilha...
+            </>
+          ) : (
+            <>
+              <Icone nome="planilha" className="h-6 w-6" />
+              BAIXAR AVALIAÇÕES
+            </>
+          )}
+        </button>
       </div>
+
+      {aviso && (
+        <p role="status" className="text-[1.05rem] font-bold text-sucesso-700">
+          {aviso}
+        </p>
+      )}
 
       {erro && (
         <p
