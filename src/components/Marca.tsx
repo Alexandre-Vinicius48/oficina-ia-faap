@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LogoBairro, LogoFaap, LogosParceria } from "@/components/Logos";
 import { OFICINA } from "@/config/oficina";
+import { inscricoesAbertas } from "@/lib/configuracoes";
 
 /**
  * Cabecalho institucional.
@@ -8,7 +9,11 @@ import { OFICINA } from "@/config/oficina";
  * um botao direto para a inscricao. Uma linha so, sem menu — menos escolhas,
  * menos chance de a pessoa se perder.
  */
-export function Cabecalho({ comBotao = true }: { comBotao?: boolean }) {
+export async function Cabecalho({ comBotao = true }: { comBotao?: boolean }) {
+  // O botao some quando as inscricoes fecham: mandar a pessoa para uma
+  // pagina que so diz "encerradas" e perda de tempo dela.
+  const mostrarBotao = comBotao && (await inscricoesAbertas());
+
   return (
     <header className="sticky top-0 z-40 border-b-2 border-borda bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
@@ -22,7 +27,7 @@ export function Cabecalho({ comBotao = true }: { comBotao?: boolean }) {
           <LogoBairro alturaPx={38} />
         </Link>
 
-        {comBotao && (
+        {mostrarBotao && (
           <Link
             href="/inscricao"
             className="hidden rounded-xl bg-marca-700 px-6 py-3 text-[1.02rem] font-bold text-white transition hover:bg-marca-800 sm:inline-flex"

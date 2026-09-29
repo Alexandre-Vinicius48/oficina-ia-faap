@@ -3,6 +3,7 @@ import { z } from "zod";
 import { inscricaoSchema } from "@/lib/validacao";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { dentroDoLimite, impressaoDigital } from "@/lib/limite-requisicoes";
+import { inscricoesAbertas } from "@/lib/configuracoes";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -60,7 +61,19 @@ export async function POST(request: Request) {
     );
   }
 
-  // ---- 2. Leitura do corpo ------------------------------------------------
+  // ---- 2. As inscricoes estao abertas? ------------------------------------
+  // Conferido aqui, no servidor, e nao so escondendo o formulario na tela:
+  // quem enviar direto para este endereco tambem tem que ser recusado.
+  if (!(await inscricoesAbertas())) {
+    return respostaJson(
+      {
+        erro: "As inscrições para esta oficina foram encerradas. Fale com a organização se precisar de ajuda.",
+      },
+      403,
+    );
+  }
+
+  // ---- 3. Leitura do corpo ------------------------------------------------
   let bruto: unknown;
   try {
     bruto = await request.json();
@@ -86,7 +99,7 @@ export async function POST(request: Request) {
 
   const dados = analise.data;
 
-  // ---- 3. Barreiras anti-robô --------------------------------------------
+  // ---- 4. Barreiras anti-robô --------------------------------------------
   // Respondemos "sucesso" para o robô não descobrir que foi barrado,
   // mas nada é gravado.
   const pareceRobo =
@@ -98,7 +111,7 @@ export async function POST(request: Request) {
     return respostaJson({ ok: true }, 201);
   }
 
-  // ---- 4. Gravação --------------------------------------------------------
+  // ---- 5. Gravação --------------------------------------------------------
   const supabase = supabaseAdmin();
 
   const { error } = await supabase.from("inscricoes").insert({
@@ -130,7 +143,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // ---- 5. Sucesso ---------------------------------------------------------
+  // ---- 6. Sucesso ---------------------------------------------------------
   const resposta = respostaJson({ ok: true }, 201);
 
   // Marca apenas que a matrícula acabou de acontecer, para a tela de sucesso.

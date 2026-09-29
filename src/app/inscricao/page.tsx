@@ -4,11 +4,14 @@ import { Cabecalho, Rodape } from "@/components/Marca";
 import { FormularioInscricao } from "@/components/FormularioInscricao";
 import { Icone } from "@/components/Icones";
 import { SeloParceria } from "@/components/Logos";
+import { inscricoesAbertas } from "@/lib/configuracoes";
 import { OFICINA } from "@/config/oficina";
 
 export const metadata: Metadata = { title: "Inscrição" };
 
-export default function PaginaInscricao() {
+export default async function PaginaInscricao() {
+  const abertas = await inscricoesAbertas();
+
   return (
     <>
       <Cabecalho comBotao={false} />
@@ -23,16 +26,22 @@ export default function PaginaInscricao() {
           <div className="relative mx-auto max-w-6xl px-5 py-10 sm:py-14">
             <div className="animacao-surgir max-w-2xl">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-marca-200 bg-white px-5 py-2 text-[0.9rem] font-bold tracking-[0.1em] text-marca-700 uppercase">
-                <span className="h-2.5 w-2.5 rounded-full bg-acolhe-600" />
-                Inscrição gratuita
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    abertas ? "bg-acolhe-600" : "bg-tinta-suave"
+                  }`}
+                />
+                {abertas ? "Inscrição gratuita" : "Inscrições encerradas"}
               </p>
               <h1 className="text-[2rem] leading-tight font-extrabold text-marca-900 sm:text-[2.5rem]">
-                Faça sua inscrição
+                {abertas ? "Faça sua inscrição" : "Oficina de Inteligência Artificial"}
               </h1>
-              <p className="mt-4 text-[1.15rem] leading-relaxed text-tinta-suave">
-                Preencha os campos abaixo. É rápido, gratuito e leva menos de
-                2 minutos. {OFICINA.avisoDeVagas}
-              </p>
+              {abertas && (
+                <p className="mt-4 text-[1.15rem] leading-relaxed text-tinta-suave">
+                  Preencha os campos abaixo. É rápido, gratuito e leva menos de
+                  2 minutos. {OFICINA.avisoDeVagas}
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -41,7 +50,33 @@ export default function PaginaInscricao() {
           {/* ---------- Formulário ---------- */}
           <div className="animacao-surgir order-2 lg:order-1">
             <div className="rounded-3xl border-2 border-borda bg-white p-6 shadow-lg sm:p-9">
-              <FormularioInscricao />
+              {abertas ? (
+                <FormularioInscricao />
+              ) : (
+                /* Mostramos o aviso no lugar do formulário, e não um
+                   formulário que falharia no fim. Preencher cinco campos
+                   para receber uma recusa é frustrante para qualquer um, e
+                   especialmente para quem tem dificuldade em digitar. */
+                <div className="text-center">
+                  <span className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-marca-50 text-marca-700">
+                    <Icone nome="cadeado" className="h-11 w-11" />
+                  </span>
+                  <h2 className="text-[1.6rem] leading-tight font-extrabold text-marca-900">
+                    {OFICINA.inscricoesEncerradas.titulo}
+                  </h2>
+                  <p className="mx-auto mt-4 max-w-md text-[1.12rem] leading-relaxed text-tinta-suave">
+                    {OFICINA.inscricoesEncerradas.texto}
+                  </p>
+                  {OFICINA.contato.email && (
+                    <a
+                      href={`mailto:${OFICINA.contato.email}`}
+                      className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-marca-700 px-8 py-5 text-[1.15rem] font-extrabold text-white transition hover:bg-marca-800 sm:w-auto"
+                    >
+                      Falar com a organização
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

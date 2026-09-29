@@ -6,6 +6,7 @@ import { Videos } from "@/components/Videos";
 import { Icone, type NomeIcone } from "@/components/Icones";
 import { LogosParceria, SeloParceria } from "@/components/Logos";
 import { OFICINA } from "@/config/oficina";
+import { inscricoesAbertas } from "@/lib/configuracoes";
 
 /** Divisor curvo suave entre duas faixas de cor. */
 function Curva({ de, para }: { de: string; para: string }) {
@@ -26,7 +27,8 @@ function Curva({ de, para }: { de: string; para: string }) {
   );
 }
 
-export default function PaginaInicial() {
+export default async function PaginaInicial() {
+  const abertas = await inscricoesAbertas();
   const { encontro } = OFICINA;
   const temEncontro = Boolean(encontro.data || encontro.horario || encontro.local);
 
@@ -45,8 +47,12 @@ export default function PaginaInicial() {
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-14 lg:grid-cols-[1.05fr_1fr] lg:py-20">
             <div className="animacao-surgir">
               <p className="mb-5 inline-flex items-center gap-2 rounded-full border-2 border-marca-200 bg-white px-5 py-2 text-[0.92rem] font-bold tracking-[0.1em] text-marca-700 uppercase">
-                <span className="h-2.5 w-2.5 rounded-full bg-acolhe-600" />
-                Inscrições abertas · Gratuito
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    abertas ? "bg-acolhe-600" : "bg-tinta-suave"
+                  }`}
+                />
+                {abertas ? "Inscrições abertas · Gratuito" : "Inscrições encerradas"}
               </p>
 
               <h1 className="text-[2.3rem] leading-[1.08] font-extrabold text-marca-900 sm:text-[3.1rem]">
@@ -61,24 +67,40 @@ export default function PaginaInicial() {
                 {OFICINA.descricao}
               </p>
 
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <Link
-                  href="/inscricao"
-                  className="inline-flex items-center justify-center gap-3 rounded-2xl bg-acolhe-600 px-8 py-5 text-[1.25rem] font-extrabold text-white shadow-lg transition hover:bg-acolhe-700"
-                >
-                  Quero me inscrever
-                  <Icone nome="seta" className="h-7 w-7" />
-                </Link>
-                <p className="text-[1.02rem] text-tinta-suave">
-                  Leva menos de 2 minutos.
-                  {OFICINA.avisoDeVagas && (
-                    <>
-                      <br />
-                      {OFICINA.avisoDeVagas}
-                    </>
-                  )}
-                </p>
-              </div>
+              {abertas ? (
+                <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <Link
+                    href="/inscricao"
+                    className="inline-flex items-center justify-center gap-3 rounded-2xl bg-acolhe-700 px-8 py-5 text-[1.25rem] font-extrabold text-white shadow-lg transition hover:bg-acolhe-800"
+                  >
+                    Quero me inscrever
+                    <Icone nome="seta" className="h-7 w-7" />
+                  </Link>
+                  <p className="text-[1.02rem] text-tinta-suave">
+                    Leva menos de 2 minutos.
+                    {OFICINA.avisoDeVagas && (
+                      <>
+                        <br />
+                        {OFICINA.avisoDeVagas}
+                      </>
+                    )}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-9 rounded-2xl border-2 border-borda bg-white p-6">
+                  <p className="flex items-start gap-3 text-[1.12rem] leading-relaxed font-semibold text-tinta">
+                    <span className="mt-0.5 shrink-0 text-marca-600">
+                      <Icone nome="cadeado" className="h-7 w-7" />
+                    </span>
+                    <span>
+                      {OFICINA.inscricoesEncerradas.titulo}.{" "}
+                      <span className="font-normal text-tinta-suave">
+                        {OFICINA.inscricoesEncerradas.texto}
+                      </span>
+                    </span>
+                  </p>
+                </div>
+              )}
 
               <div className="mt-10 border-t-2 border-borda pt-7">
                 <p className="mb-4 text-[0.88rem] font-bold tracking-[0.14em] text-tinta-suave uppercase">
@@ -368,21 +390,29 @@ export default function PaginaInicial() {
 
           <div className="relative mx-auto max-w-3xl px-5 text-center">
             <h2 className="text-[2rem] leading-tight font-extrabold sm:text-[2.5rem]">
-              Vamos aprender juntos?
+              {abertas ? "Vamos aprender juntos?" : OFICINA.inscricoesEncerradas.titulo}
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-[1.18rem] leading-relaxed text-marca-100">
-              A inscrição é gratuita e leva menos de dois minutos.{" "}
-              {OFICINA.avisoDeVagas} Guardamos seus dados com segurança e
-              usamos apenas para organizar a oficina.
+              {abertas ? (
+                <>
+                  A inscrição é gratuita e leva menos de dois minutos.{" "}
+                  {OFICINA.avisoDeVagas} Guardamos seus dados com segurança e
+                  usamos apenas para organizar a oficina.
+                </>
+              ) : (
+                OFICINA.inscricoesEncerradas.texto
+              )}
             </p>
 
-            <Link
-              href="/inscricao"
-              className="mt-10 inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-acolhe-600 px-9 py-5 text-[1.3rem] font-extrabold text-white shadow-xl transition hover:bg-acolhe-700 sm:w-auto"
-            >
-              Quero me inscrever
-              <Icone nome="seta" className="h-7 w-7" />
-            </Link>
+            {abertas && (
+              <Link
+                href="/inscricao"
+                className="mt-10 inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-acolhe-700 px-9 py-5 text-[1.3rem] font-extrabold text-white shadow-xl transition hover:bg-acolhe-800 sm:w-auto"
+              >
+                Quero me inscrever
+                <Icone nome="seta" className="h-7 w-7" />
+              </Link>
+            )}
 
             {/* Centralizado por texto, e nao por flex: um cartao que e item
                 flex e encolhido pelo navegador abaixo do proprio conteudo. */}

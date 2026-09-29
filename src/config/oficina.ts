@@ -18,6 +18,15 @@ export const OFICINA = {
   subtitulo: "FAAP + Bairro com Vida",
 
   /**
+   * Textos mostrados quando o responsavel fecha as inscricoes pelo painel.
+   */
+  inscricoesEncerradas: {
+    titulo: "As inscrições estão encerradas",
+    texto:
+      "Já recebemos o número de inscrições previsto para esta turma. Se você tem interesse em participar de uma próxima oficina, fale com a organização.",
+  },
+
+  /**
    * Aviso sobre a quantidade de vagas, mostrado junto aos botoes de inscricao.
    * Deixe "" para nao aparecer.
    */
