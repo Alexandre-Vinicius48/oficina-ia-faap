@@ -5,6 +5,7 @@ import { FormularioInscricao } from "@/components/FormularioInscricao";
 import { Icone } from "@/components/Icones";
 import { SeloParceria } from "@/components/Logos";
 import { inscricoesAbertas } from "@/lib/configuracoes";
+import { BotaoWhatsApp } from "@/components/BotaoWhatsApp";
 import { OFICINA } from "@/config/oficina";
 
 export const metadata: Metadata = { title: "Inscrição" };
@@ -67,13 +68,20 @@ export default async function PaginaInscricao() {
                   <p className="mx-auto mt-4 max-w-md text-[1.12rem] leading-relaxed text-tinta-suave">
                     {OFICINA.inscricoesEncerradas.texto}
                   </p>
+                  <BotaoWhatsApp
+                    className="mt-7"
+                    rotulo="Falar com a organização"
+                  />
                   {OFICINA.contato.email && (
-                    <a
-                      href={`mailto:${OFICINA.contato.email}`}
-                      className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-marca-700 px-8 py-5 text-[1.15rem] font-extrabold text-white transition hover:bg-marca-800 sm:w-auto"
-                    >
-                      Falar com a organização
-                    </a>
+                    <p className="mt-4 text-[1.02rem] text-tinta-suave">
+                      Ou por e-mail:{" "}
+                      <a
+                        href={`mailto:${OFICINA.contato.email}`}
+                        className="font-semibold text-marca-700 underline underline-offset-4"
+                      >
+                        {OFICINA.contato.email}
+                      </a>
+                    </p>
                   )}
                 </div>
               )}

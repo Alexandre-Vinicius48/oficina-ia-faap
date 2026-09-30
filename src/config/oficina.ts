@@ -58,10 +58,18 @@ export const OFICINA = {
     observacao: "",
   },
 
-  /** Contato mostrado no rodapé. Deixe "" para esconder. */
+  /**
+   * Contato da organização. Deixe qualquer campo como "" para escondê-lo.
+   *
+   * O WhatsApp deve ter SÓ NÚMEROS, com DDD e sem o 55 do país — o código
+   * do Brasil é acrescentado automaticamente no link.
+   */
   contato: {
-    email: "",      // exemplo: "oficina.ia@exemplo.com"
-    whatsapp: "",   // exemplo: "(11) 90000-0000"
+    email: "",                    // exemplo: "oficina.ia@exemplo.com"
+    whatsapp: "11932538479",
+    /** Mensagem que já vem escrita quando a pessoa abre a conversa. */
+    mensagemWhatsapp:
+      "Olá! Tenho uma dúvida sobre a Oficina de Inteligência Artificial da FAAP com o Bairro com Vida.",
   },
 
   /**

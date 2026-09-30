@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LogoBairro, LogoFaap, LogosParceria } from "@/components/Logos";
 import { OFICINA } from "@/config/oficina";
 import { inscricoesAbertas } from "@/lib/configuracoes";
+import { BotaoWhatsApp } from "@/components/BotaoWhatsApp";
 
 /**
  * Cabecalho institucional.
@@ -63,20 +64,20 @@ export function Rodape() {
                 <h2 className="text-[1.05rem] font-extrabold text-tinta">
                   Ficou com dúvida?
                 </h2>
-                <p className="mt-1 text-tinta-suave">
-                  {contato.email && (
+                {contato.whatsapp && (
+                  <BotaoWhatsApp className="mt-3" rotulo="Fale conosco no WhatsApp" />
+                )}
+                {contato.email && (
+                  <p className="mt-3 text-tinta-suave">
+                    Ou por e-mail:{" "}
                     <a
                       className="font-semibold text-marca-700 underline underline-offset-4"
                       href={`mailto:${contato.email}`}
                     >
                       {contato.email}
                     </a>
-                  )}
-                  {contato.email && contato.whatsapp && <br />}
-                  {contato.whatsapp && (
-                    <span className="font-semibold">{contato.whatsapp}</span>
-                  )}
-                </p>
+                  </p>
+                )}
               </div>
             )}
 

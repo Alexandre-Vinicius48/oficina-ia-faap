@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { Cabecalho, Rodape } from "@/components/Marca";
 import { SeloParceria } from "@/components/Logos";
+import { BotaoWhatsApp } from "@/components/BotaoWhatsApp";
 import { Icone } from "@/components/Icones";
 import { Comemoracao } from "@/components/Comemoracao";
 import { OFICINA } from "@/config/oficina";
@@ -72,12 +73,15 @@ export default async function PaginaSucesso() {
             </p>
           )}
 
-          <Link
-            href="/"
-            className="mt-10 inline-flex w-full items-center justify-center rounded-2xl bg-marca-700 px-8 py-5 text-[1.2rem] font-extrabold text-white transition hover:bg-marca-800 sm:w-auto"
-          >
-            Voltar para a página inicial
-          </Link>
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <BotaoWhatsApp rotulo="Tirar dúvida no WhatsApp" />
+            <Link
+              href="/"
+              className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-borda bg-white px-8 py-5 text-[1.15rem] font-extrabold text-tinta transition hover:bg-papel-alt sm:w-auto"
+            >
+              Voltar para a página inicial
+            </Link>
+          </div>
 
           <div className="mt-14 text-center">
             <SeloParceria />
