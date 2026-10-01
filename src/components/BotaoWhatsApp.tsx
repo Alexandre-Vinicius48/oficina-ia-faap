@@ -68,3 +68,42 @@ export function BotaoWhatsApp({
     </a>
   );
 }
+
+/**
+ * Icone flutuante no canto da tela.
+ *
+ * Fica no rodape de proposito: o rodape so existe nas paginas publicas, e
+ * nao no painel administrativo — la o botao seria so ruido sobre a tabela
+ * de inscritos. Como a posicao e fixa, o lugar dele no HTML nao importa.
+ *
+ * Cuidados:
+ *  · 64px de diametro, bem acima do minimo de toque;
+ *  · respeita a faixa inferior do iPhone (safe-area), para nao ficar
+ *    embaixo da barra de gestos;
+ *  · fica ABAIXO das janelas de confirmacao, que usam <dialog> e sobem para
+ *    a camada superior do navegador;
+ *  · sem animacao: um elemento que pulsa no canto cansa, e este publico ja
+ *    tem bastante coisa nova na tela.
+ */
+export function WhatsAppFlutuante() {
+  const endereco = enderecoWhatsApp();
+  if (!endereco) return null;
+
+  const numero = formatarNumero(OFICINA.contato.whatsapp);
+
+  return (
+    <a
+      href={endereco}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Falar com a organização no WhatsApp, ${numero} (abre em outra aba)`}
+      title="Falar no WhatsApp"
+      className="fixed right-5 bottom-5 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-[#146039] text-white shadow-xl transition hover:bg-[#0f4a2c] sm:right-7 sm:bottom-7"
+      style={{
+        marginBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
+    >
+      <Icone nome="whatsapp" className="h-9 w-9" />
+    </a>
+  );
+}

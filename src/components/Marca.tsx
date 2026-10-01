@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LogoBairro, LogoFaap, LogosParceria } from "@/components/Logos";
 import { OFICINA } from "@/config/oficina";
 import { inscricoesAbertas } from "@/lib/configuracoes";
-import { BotaoWhatsApp } from "@/components/BotaoWhatsApp";
+import { BotaoWhatsApp, WhatsAppFlutuante } from "@/components/BotaoWhatsApp";
 
 /**
  * Cabecalho institucional.
@@ -46,7 +46,10 @@ export function Rodape() {
   const { contato } = OFICINA;
 
   return (
-    <footer className="mt-auto border-t-2 border-borda bg-white">
+    <>
+      <WhatsAppFlutuante />
+
+      <footer className="mt-auto border-t-2 border-borda bg-white">
       <div className="mx-auto max-w-6xl px-5 py-12">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr]">
           <div>
@@ -99,7 +102,9 @@ export function Rodape() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-borda pt-6 text-[0.95rem] text-tinta-suave">
+        {/* pb extra no celular: o icone flutuante fica neste canto e
+            cobriria a ultima linha sem esse respiro. */}
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-borda pt-6 pb-20 text-[0.95rem] text-tinta-suave sm:pb-0">
           <p>Projeto acadêmico — {OFICINA.subtitulo}.</p>
           <span className="flex flex-wrap gap-5">
             <Link
@@ -117,6 +122,7 @@ export function Rodape() {
           </span>
         </div>
       </div>
-    </footer>
+      </footer>
+    </>
   );
 }
