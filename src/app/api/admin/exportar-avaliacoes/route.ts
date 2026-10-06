@@ -13,9 +13,17 @@ export const dynamic = "force-dynamic";
 /**
  * PLANILHA DAS AVALIACOES DAS AULAS.
  *
- * Duas abas:
- *   Resumo    — uma linha por aula, com total, media e quantas notas de cada
- *   Respostas — uma linha por resposta, com nota, rotulo e comentario
+ * Sem filtro, traz tudo, separado por dia:
+ *   Resumo   — uma linha por aula, com total, media e quantas notas de cada
+ *   Aula 1   — as respostas daquele encontro, com os comentarios
+ *   Aula 2   — e assim por diante, uma aba por aula
+ *
+ * Com ?aula=<id>, traz so aquele encontro, em um arquivo com o numero e a
+ * data no nome.
+ *
+ * O identificador da aula viaja na URL sem problema: e um codigo interno do
+ * sistema, nao um dado de ninguem. A regra de nunca por dado pessoal em
+ * endereco continua valendo para CPF e celular, que seguem em POST.
  *
  * A planilha NAO identifica quem respondeu, igual ao painel. O vinculo com a
  * inscricao existe no banco apenas para impedir resposta repetida, e nao e
@@ -43,8 +51,8 @@ function dataDaAula(data: string): string {
   return ano && mes && dia ? `${dia}/${mes}/${ano}` : data;
 }
 
-function estilizarCabecalho(aba: ExcelJS.Worksheet) {
-  const linha = aba.getRow(1);
+function estilizarCabecalho(aba: ExcelJS.Worksheet, numeroDaLinha = 1) {
+  const linha = aba.getRow(numeroDaLinha);
   linha.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } };
   linha.alignment = { vertical: "middle", horizontal: "left" };
   linha.height = 26;
@@ -58,7 +66,7 @@ function estilizarCabecalho(aba: ExcelJS.Worksheet) {
   });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const admin = await administradorAtual();
   if (!admin) return json({ erro: "Acesso restrito." }, 403);
 
@@ -68,6 +76,14 @@ export async function GET() {
       { erro: "Aguarde um instante antes de baixar a planilha novamente." },
       429,
     );
+  }
+
+  // Filtro opcional: uma aula so.
+  const pedida = new URL(request.url).searchParams.get("aula");
+  const filtroValido =
+    pedida && /^[0-9a-f-]{36}$/i.test(pedida) ? pedida : null;
+  if (pedida && !filtroValido) {
+    return json({ erro: "Aula inválida." }, 400);
   }
 
   const supabase = supabaseAdmin();
@@ -90,8 +106,14 @@ export async function GET() {
     );
   }
 
-  const aulas = (resAulas.data ?? []) as Aula[];
-  const avaliacoes = (resAvaliacoes.data ?? []) as Avaliacao[];
+  let aulas = (resAulas.data ?? []) as Aula[];
+  let avaliacoes = (resAvaliacoes.data ?? []) as Avaliacao[];
+
+  if (filtroValido) {
+    aulas = aulas.filter((a) => a.id === filtroValido);
+    if (aulas.length === 0) return json({ erro: "Aula não encontrada." }, 404);
+    avaliacoes = avaliacoes.filter((a) => a.aula_id === filtroValido);
+  }
   const rotulo = new Map(ROSTOS.map((r) => [r.nota, r.rotulo]));
 
   const planilha = new ExcelJS.Workbook();
@@ -140,54 +162,69 @@ export async function GET() {
     });
   }
 
-  // ---------------------- Aba 2: Respostas ----------------------
-  const respostas = planilha.addWorksheet("Respostas", {
-    views: [{ state: "frozen", ySplit: 1 }],
-  });
-
-  respostas.columns = [
-    { header: "Aula", key: "numero", width: 8 },
-    { header: "Tema", key: "tema", width: 38 },
-    { header: "Nota", key: "nota", width: 8 },
-    { header: "Avaliação", key: "rotulo", width: 16 },
-    { header: "Comentário", key: "comentario", width: 62 },
-    { header: "Data da resposta", key: "data", width: 18 },
-    { header: "Hora da resposta", key: "hora", width: 18 },
-  ];
-  estilizarCabecalho(respostas);
-
-  const porId = new Map(aulas.map((a) => [a.id, a]));
-
-  for (const avaliacao of avaliacoes) {
-    const aula = porId.get(avaliacao.aula_id);
-    respostas.addRow({
-      numero: aula?.numero ?? "",
-      tema: aula?.tema ?? "",
-      nota: avaliacao.nota,
-      rotulo: rotulo.get(avaliacao.nota) ?? "",
-      comentario: avaliacao.comentario ?? "",
-      data: formatarData(avaliacao.created_at),
-      hora: formatarHora(avaliacao.created_at),
-    });
-  }
-
-  // O comentário é o campo que mais cresce: quebra de linha e topo alinhado.
-  respostas.getColumn("comentario").alignment = {
-    wrapText: true,
-    vertical: "top",
-  };
-  respostas.eachRow((linha, numero) => {
-    if (numero > 1) linha.alignment = { vertical: "top" };
-  });
-
-  if (avaliacoes.length > 0) {
-    respostas.autoFilter = { from: "A1", to: "G1" };
-  }
   if (aulas.length > 0) {
-    resumo.autoFilter = {
-      from: "A1",
-      to: { row: 1, column: resumo.columnCount },
+    resumo.autoFilter = { from: "A1", to: { row: 1, column: resumo.columnCount } };
+  }
+
+  // ---------------- Uma aba por aula, com as respostas ----------------
+  // Separado por dia de proposito: juntar tudo numa aba so obriga a filtrar
+  // a planilha para olhar um encontro. Com uma aba por aula, cada dia abre
+  // pronto, e as abas ficam na ordem do cronograma.
+  for (const aula of aulas) {
+    const daAula = avaliacoes.filter((a) => a.aula_id === aula.id);
+
+    // O Excel limita o nome da aba a 31 caracteres e proibe : \\ / ? * [ ]
+    const nomeDaAba = `Aula ${aula.numero}`;
+    const aba = planilha.addWorksheet(nomeDaAba, {
+      views: [{ state: "frozen", ySplit: 2 }],
+    });
+
+    aba.columns = [
+      { header: "Nota", key: "nota", width: 8 },
+      { header: "Avaliação", key: "rotulo", width: 16 },
+      { header: "Comentário", key: "comentario", width: 70 },
+      { header: "Data da resposta", key: "data", width: 18 },
+      { header: "Hora da resposta", key: "hora", width: 18 },
+    ];
+
+    // Linha 1: o tema e a data do encontro, para quem abrir a aba saber de
+    // qual aula se trata sem voltar ao resumo.
+    aba.spliceRows(1, 0, [`Aula ${aula.numero} — ${aula.tema} — ${dataDaAula(aula.data)}`]);
+    aba.mergeCells("A1:E1");
+    const titulo = aba.getRow(1);
+    titulo.height = 28;
+    titulo.font = { bold: true, size: 13, color: { argb: "FF0D2350" } };
+    titulo.alignment = { vertical: "middle" };
+    titulo.getCell(1).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFDDE7FB" },
     };
+
+    estilizarCabecalho(aba, 2);
+
+    for (const avaliacao of daAula) {
+      aba.addRow({
+        nota: avaliacao.nota,
+        rotulo: rotulo.get(avaliacao.nota) ?? "",
+        comentario: avaliacao.comentario ?? "",
+        data: formatarData(avaliacao.created_at),
+        hora: formatarHora(avaliacao.created_at),
+      });
+    }
+
+    // O comentário é a única coluna que cresce de verdade.
+    aba.getColumn("comentario").alignment = { wrapText: true, vertical: "top" };
+    aba.eachRow((linha, numero) => {
+      if (numero > 2) linha.alignment = { vertical: "top" };
+    });
+
+    if (daAula.length > 0) {
+      aba.autoFilter = { from: "A2", to: "E2" };
+    } else {
+      const vazia = aba.addRow({ comentario: "Nenhuma resposta nesta aula." });
+      vazia.font = { italic: true, color: { argb: "FF44506B" } };
+    }
   }
 
   console.info("[admin] exportacao de avaliacoes", {
@@ -197,12 +234,19 @@ export async function GET() {
 
   const arquivo = await planilha.xlsx.writeBuffer();
 
+  // Uma aula so ganha nome proprio, para nao sobrescrever o arquivo geral
+  // na pasta de downloads.
+  const soUmaAula = filtroValido ? aulas[0] : null;
+  const nomeDoArquivo = soUmaAula
+    ? `avaliacoes_aula${soUmaAula.numero}_${soUmaAula.data}.xlsx`
+    : NOME_ARQUIVO_EXCEL_AVALIACOES;
+
   return new NextResponse(arquivo as ArrayBuffer, {
     status: 200,
     headers: {
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="${NOME_ARQUIVO_EXCEL_AVALIACOES}"`,
+      "Content-Disposition": `attachment; filename="${nomeDoArquivo}"`,
       "Content-Length": String((arquivo as ArrayBuffer).byteLength),
       "Cache-Control": "no-store",
     },

@@ -138,16 +138,17 @@ export function PainelAulas() {
     setDistribuicao(dados.distribuicao ?? []);
   }
 
-  async function baixarExcel() {
+  async function baixarExcel(aula?: Aula) {
     if (baixando) return;
     setBaixando(true);
     setAviso(null);
     setErro(null);
 
     try {
-      const resposta = await fetch("/api/admin/exportar-avaliacoes", {
-        cache: "no-store",
-      });
+      const rota = aula
+        ? `/api/admin/exportar-avaliacoes?aula=${encodeURIComponent(aula.id)}`
+        : "/api/admin/exportar-avaliacoes";
+      const resposta = await fetch(rota, { cache: "no-store" });
 
       if (resposta.status === 401 || resposta.status === 403) {
         router.replace("/admin");
@@ -163,13 +164,19 @@ export function PainelAulas() {
       const endereco = URL.createObjectURL(arquivo);
       const link = document.createElement("a");
       link.href = endereco;
-      link.download = NOME_ARQUIVO_EXCEL_AVALIACOES;
+      link.download = aula
+        ? `avaliacoes_aula${aula.numero}_${aula.data}.xlsx`
+        : NOME_ARQUIVO_EXCEL_AVALIACOES;
       document.body.appendChild(link);
       link.click();
       link.remove();
       // Libera a memoria so depois que o navegador comecou a baixar.
       setTimeout(() => URL.revokeObjectURL(endereco), 10_000);
-      setAviso("Planilha baixada com sucesso.");
+      setAviso(
+        aula
+          ? `Planilha da aula ${aula.numero} baixada com sucesso.`
+          : "Planilha com todas as aulas baixada com sucesso.",
+      );
     } catch {
       setErro("Sem conexão com a internet. Tente novamente.");
     } finally {
@@ -235,7 +242,7 @@ export function PainelAulas() {
 
         <button
           type="button"
-          onClick={baixarExcel}
+          onClick={() => baixarExcel()}
           disabled={baixando || totalDeRespostas === 0}
           aria-busy={baixando}
           title={
@@ -256,7 +263,7 @@ export function PainelAulas() {
           ) : (
             <>
               <Icone nome="planilha" className="h-6 w-6" />
-              BAIXAR AVALIAÇÕES
+              BAIXAR TODAS AS AVALIAÇÕES
             </>
           )}
         </button>
@@ -382,13 +389,25 @@ export function PainelAulas() {
                 )}
 
                 {aula.totalDeAvaliacoes > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => verAvaliacoes(aula)}
-                    className="rounded-xl border-2 border-borda bg-white px-5 py-3 text-[1.02rem] font-extrabold text-tinta transition hover:bg-papel"
-                  >
-                    Ver respostas
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => verAvaliacoes(aula)}
+                      className="rounded-xl border-2 border-borda bg-white px-5 py-3 text-[1.02rem] font-extrabold text-tinta transition hover:bg-papel"
+                    >
+                      Ver respostas
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => baixarExcel(aula)}
+                      disabled={baixando}
+                      aria-label={`Baixar as avaliações da aula ${aula.numero} em Excel`}
+                      className="flex items-center gap-2 rounded-xl border-2 border-sucesso-700 bg-white px-5 py-3 text-[1.02rem] font-extrabold text-sucesso-700 transition hover:bg-sucesso-50 disabled:opacity-60"
+                    >
+                      <Icone nome="planilha" className="h-5 w-5" />
+                      Baixar desta aula
+                    </button>
+                  </>
                 )}
               </div>
             </div>
