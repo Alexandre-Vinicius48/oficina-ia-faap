@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Campo } from "@/components/Campo";
 import { Icone } from "@/components/Icones";
 import { EscalaRostos } from "@/components/EscalaRostos";
+import { Comemoracao } from "@/components/Comemoracao";
 import { mascararCelular } from "@/lib/format";
 import { contarPalavras, LIMITE_DE_PALAVRAS } from "@/lib/validacao";
 
@@ -136,34 +137,50 @@ export function AreaParticipante({ totalDeAulas }: { totalDeAulas: number }) {
   if (etapa === "pronto" || etapa === "jaAvaliou") {
     const enviouAgora = etapa === "pronto";
     return (
-      <div className="animacao-surgir text-center">
-        <span
-          className={`mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-full ${
-            enviouAgora ? "bg-sucesso-50 text-sucesso-700" : "bg-marca-50 text-marca-700"
-          }`}
-        >
-          <Icone nome="check" className="h-14 w-14" />
-        </span>
-        <h2
-          ref={titulo}
-          tabIndex={-1}
-          className={`text-[1.9rem] leading-tight font-extrabold outline-none sm:text-[2.2rem] ${
-            enviouAgora ? "text-sucesso-700" : "text-marca-900"
-          }`}
-        >
-          {enviouAgora ? "Obrigado pela sua resposta!" : "Você já avaliou esta aula"}
-        </h2>
-        <p className="mx-auto mt-5 max-w-lg text-[1.15rem] leading-relaxed text-tinta-suave">
-          {enviouAgora
-            ? "Sua opinião ajuda a melhorar as próximas aulas. Até o próximo encontro!"
-            : "Sua resposta já foi registrada. Obrigado por participar!"}
-        </p>
-        {aula && (
-          <p className="mt-6 text-[1.05rem] font-semibold text-tinta">
-            Aula {aula.numero} — {aula.tema}
+      <>
+        {/* A mesma festa da inscricao, pelo mesmo motivo: a pessoa fez o que
+            pedimos e merece uma resposta alegre. So quem acabou de enviar ve
+            — quem volta a uma aula que ja avaliou nao comemora de novo.
+
+            Fica FORA do bloco com `animacao-surgir`: aquela classe anima
+            `transform`, e um elemento `fixed` dentro de algo com transform
+            passa a se posicionar pelo bloco, nao pela tela — os confetes
+            ficariam presos dentro do cartao. */}
+        <Comemoracao ativo={enviouAgora} />
+
+        <div className="animacao-surgir relative z-10 text-center">
+          <span
+            className={`mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-full ${
+              enviouAgora
+                ? "bg-sucesso-50 text-sucesso-700"
+                : "bg-marca-50 text-marca-700"
+            }`}
+          >
+            <Icone nome="check" className="h-14 w-14" />
+          </span>
+          <h2
+            ref={titulo}
+            tabIndex={-1}
+            className={`text-[1.9rem] leading-tight font-extrabold outline-none sm:text-[2.2rem] ${
+              enviouAgora ? "text-sucesso-700" : "text-marca-900"
+            }`}
+          >
+            {enviouAgora
+              ? "Obrigado pela sua resposta!"
+              : "Você já avaliou esta aula"}
+          </h2>
+          <p className="mx-auto mt-5 max-w-lg text-[1.15rem] leading-relaxed text-tinta-suave">
+            {enviouAgora
+              ? "Sua opinião ajuda a melhorar as próximas aulas. Até o próximo encontro!"
+              : "Sua resposta já foi registrada. Obrigado por participar!"}
           </p>
-        )}
-      </div>
+          {aula && (
+            <p className="mt-6 text-[1.05rem] font-semibold text-tinta">
+              Aula {aula.numero} — {aula.tema}
+            </p>
+          )}
+        </div>
+      </>
     );
   }
 
