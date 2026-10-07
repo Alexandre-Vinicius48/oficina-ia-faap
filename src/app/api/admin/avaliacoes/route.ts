@@ -11,14 +11,13 @@ export const dynamic = "force-dynamic";
 /**
  * AVALIACOES DE UMA AULA, PARA O PAINEL.
  *
- * Devolve nota, comentario e horario — e DE PROPOSITO nao devolve quem
- * escreveu. O vinculo com a inscricao existe no banco apenas para impedir
- * que a mesma pessoa avalie duas vezes.
+ * Devolve nota, comentario, horario e o NOME de quem respondeu.
  *
- * A razao e pratica: gente escreve o que realmente pensa quando sabe que a
- * critica nao vem com o nome colado. Um participante que achou a aula
- * confusa dificilmente diria isso se soubesse que o organizador veria seu
- * nome ao lado.
+ * A tela de avaliacao avisa o participante disso antes do envio. Tela e
+ * painel precisam dizer a mesma coisa: prometer anonimato e depois mostrar
+ * o nome seria enganar quem respondeu.
+ *
+ * Mesmo assim, so o nome: CPF, celular e e-mail continuam fora daqui.
  */
 
 const corpoSchema = z.object({ aulaId: z.string().uuid() });
@@ -52,7 +51,7 @@ export async function POST(request: Request) {
   const supabase = supabaseAdmin();
   const { data, error } = await supabase
     .from("avaliacoes")
-    .select("id, nota, comentario, created_at")
+    .select("id, inscricao_id, nota, comentario, created_at")
     .eq("aula_id", analise.data.aulaId)
     .order("created_at", { ascending: false });
 
@@ -63,7 +62,25 @@ export async function POST(request: Request) {
     return json({ erro: "Não foi possível carregar as avaliações." }, 500);
   }
 
-  const itens = data ?? [];
+  const brutos = data ?? [];
+
+  const { data: inscritos } = await supabase
+    .from("inscricoes")
+    .select("id, nome_completo");
+
+  const nomePor = new Map(
+    (inscritos ?? []).map((i) => [i.id as string, i.nome_completo as string]),
+  );
+
+  // Devolve o nome e descarta o id da inscricao: a tela precisa de quem
+  // escreveu, nao do vinculo com o cadastro.
+  const itens = brutos.map((i) => ({
+    id: i.id,
+    nota: i.nota,
+    comentario: i.comentario,
+    created_at: i.created_at,
+    nome: nomePor.get(i.inscricao_id as string) ?? "(inscrição removida)",
+  }));
   // Derivada da escala, e nao fixa: se o numero de rostos mudar, o grafico
   // do painel acompanha sozinho.
   const distribuicao = ROSTOS.map(

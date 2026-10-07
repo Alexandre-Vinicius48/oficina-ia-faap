@@ -128,9 +128,9 @@ export default async function PaginaAvaliar() {
                 <Icone nome="cadeado" className="h-7 w-7" />
               </span>
               <p className="text-[1.05rem] leading-relaxed text-tinta">
-                Sua avaliação é guardada <strong>sem o seu nome</strong>. Pedimos
-                o celular apenas para conferir que você está inscrito e para que
-                cada pessoa responda uma vez só.
+                Sua avaliação vai <strong>com o seu nome</strong> para a
+                organização da oficina. O celular serve para conferir que você
+                está inscrito e para que cada pessoa responda uma vez só.
               </p>
             </div>
           </aside>

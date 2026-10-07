@@ -266,8 +266,9 @@ export function AreaParticipante({ totalDeAulas }: { totalDeAulas: number }) {
           </button>
 
           <p className="text-center text-[1rem] leading-relaxed text-tinta-suave">
-            Sua resposta é guardada <strong>sem o seu nome</strong>. A organização
-            vê a nota e o comentário, mas não quem escreveu.
+            Sua resposta vai <strong>com o seu nome</strong> para a organização
+            da oficina. Pode escrever com sinceridade: serve para melhorar as
+            próximas aulas.
           </p>
         </form>
       </div>

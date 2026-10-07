@@ -21,6 +21,7 @@ type Aula = {
 
 type Avaliacao = {
   id: string;
+  nome: string;
   nota: number;
   comentario: string | null;
   created_at: string;
@@ -474,9 +475,10 @@ export function PainelAulas() {
                               )}
                               <p className="mt-2 text-[0.95rem] text-tinta-suave">
                                 <strong className="font-extrabold text-tinta">
-                                  {ROSTOS[a.nota - 1]?.rotulo}
+                                  {a.nome}
                                 </strong>{" "}
-                                · {formatarData(a.created_at)} às{" "}
+                                · {ROSTOS[a.nota - 1]?.rotulo} ·{" "}
+                                {formatarData(a.created_at)} às{" "}
                                 {formatarHora(a.created_at)}
                               </p>
                             </div>
@@ -496,8 +498,8 @@ export function PainelAulas() {
                     )}
 
                     <p className="mt-5 text-[0.98rem] text-tinta-suave">
-                      As respostas não mostram quem escreveu. O celular é pedido
-                      apenas para conferir a inscrição e evitar resposta repetida.
+                      As respostas vêm com o nome de quem escreveu, e a página
+                      de avaliação avisa isso ao participante antes do envio.
                     </p>
                   </>
                 )}

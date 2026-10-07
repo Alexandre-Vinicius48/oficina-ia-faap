@@ -25,18 +25,21 @@ export const dynamic = "force-dynamic";
  * sistema, nao um dado de ninguem. A regra de nunca por dado pessoal em
  * endereco continua valendo para CPF e celular, que seguem em POST.
  *
- * A planilha NAO identifica quem respondeu, igual ao painel. O vinculo com a
- * inscricao existe no banco apenas para impedir resposta repetida, e nao e
- * exportado: quem escreveu uma critica nao deve ser identificavel depois.
+ * A planilha TRAZ o nome de quem respondeu, a pedido da organizacao. A tela
+ * de avaliacao avisa isso ao participante antes de ele enviar — a promessa
+ * na tela e a planilha precisam dizer a mesma coisa.
  */
 
 type Aula = { id: string; numero: number; tema: string; data: string };
 type Avaliacao = {
   aula_id: string;
+  inscricao_id: string;
   nota: number;
   comentario: string | null;
   created_at: string;
 };
+
+type Inscrito = { id: string; nome_completo: string };
 
 function json(dados: unknown, status: number) {
   return NextResponse.json(dados, {
@@ -92,7 +95,7 @@ export async function GET(request: Request) {
     supabase.from("aulas").select("id, numero, tema, data").order("numero"),
     supabase
       .from("avaliacoes")
-      .select("aula_id, nota, comentario, created_at")
+      .select("aula_id, inscricao_id, nota, comentario, created_at")
       .order("created_at", { ascending: true }),
   ]);
 
@@ -105,6 +108,27 @@ export async function GET(request: Request) {
       500,
     );
   }
+
+  // Nomes de quem respondeu. Buscamos SO o nome: nem CPF, nem celular, nem
+  // e-mail entram na planilha de avaliacoes — a organizacao pediu para saber
+  // quem escreveu, nao para ter uma segunda copia do cadastro.
+  const resInscritos = await supabase
+    .from("inscricoes")
+    .select("id, nome_completo");
+
+  if (resInscritos.error) {
+    console.error("[admin] falha ao buscar nomes para a exportacao", {
+      codigo: resInscritos.error.code ?? "desconhecido",
+    });
+    return json(
+      { erro: "Não foi possível gerar a planilha. Tente novamente." },
+      500,
+    );
+  }
+
+  const nomePorInscricao = new Map(
+    ((resInscritos.data ?? []) as Inscrito[]).map((i) => [i.id, i.nome_completo]),
+  );
 
   let aulas = (resAulas.data ?? []) as Aula[];
   let avaliacoes = (resAvaliacoes.data ?? []) as Avaliacao[];
@@ -180,9 +204,10 @@ export async function GET(request: Request) {
     });
 
     aba.columns = [
+      { header: "Nome", key: "nome", width: 34 },
       { header: "Nota", key: "nota", width: 8 },
       { header: "Avaliação", key: "rotulo", width: 16 },
-      { header: "Comentário", key: "comentario", width: 70 },
+      { header: "Comentário", key: "comentario", width: 62 },
       { header: "Data da resposta", key: "data", width: 18 },
       { header: "Hora da resposta", key: "hora", width: 18 },
     ];
@@ -190,7 +215,7 @@ export async function GET(request: Request) {
     // Linha 1: o tema e a data do encontro, para quem abrir a aba saber de
     // qual aula se trata sem voltar ao resumo.
     aba.spliceRows(1, 0, [`Aula ${aula.numero} — ${aula.tema} — ${dataDaAula(aula.data)}`]);
-    aba.mergeCells("A1:E1");
+    aba.mergeCells("A1:F1");
     const titulo = aba.getRow(1);
     titulo.height = 28;
     titulo.font = { bold: true, size: 13, color: { argb: "FF0D2350" } };
@@ -205,6 +230,7 @@ export async function GET(request: Request) {
 
     for (const avaliacao of daAula) {
       aba.addRow({
+        nome: nomePorInscricao.get(avaliacao.inscricao_id) ?? "(inscrição removida)",
         nota: avaliacao.nota,
         rotulo: rotulo.get(avaliacao.nota) ?? "",
         comentario: avaliacao.comentario ?? "",
@@ -220,7 +246,7 @@ export async function GET(request: Request) {
     });
 
     if (daAula.length > 0) {
-      aba.autoFilter = { from: "A2", to: "E2" };
+      aba.autoFilter = { from: "A2", to: "F2" };
     } else {
       const vazia = aba.addRow({ comentario: "Nenhuma resposta nesta aula." });
       vazia.font = { italic: true, color: { argb: "FF44506B" } };
