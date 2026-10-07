@@ -105,6 +105,11 @@ export const Icones = {
       <path d="M3.5 10h17M8 3v4M16 3v4" />
     </Svg>
   ),
+  grafico: (p: Props) => (
+    <Svg {...p}>
+      <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+    </Svg>
+  ),
   planilha: (p: Props) => (
     <Svg {...p}>
       <path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-6-6Z" />

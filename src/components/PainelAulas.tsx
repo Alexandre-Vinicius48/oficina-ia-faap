@@ -361,7 +361,7 @@ export function PainelAulas() {
                       <>
                         {" · média "}
                         <strong className="font-extrabold">{aula.media}</strong>
-                        {" de 5"}
+                        {` de ${ROSTOS.length}`}
                       </>
                     )}
                   </p>

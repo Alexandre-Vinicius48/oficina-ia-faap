@@ -1,5 +1,11 @@
 import { z } from "zod";
 import { NOTA_MAXIMA } from "@/lib/escala";
+import {
+  CHAVES_PESQUISA,
+  ESCALA_PESQUISA,
+  LIMITE_DE_PALAVRAS_PESQUISA,
+  PERGUNTAS_ABERTAS,
+} from "@/lib/pesquisa";
 import { normalizarEmail, normalizarNome, somenteDigitos } from "@/lib/format";
 
 /**
@@ -168,4 +174,69 @@ export const avaliacaoSchema = z.object({
     })
     .optional()
     .default(""),
+});
+
+/* ===========================================================================
+   QUESTIONARIO FINAL
+   =========================================================================== */
+
+const VALORES_DA_ESCALA = ESCALA_PESQUISA.map((o) => o.valor);
+
+/** Uma resposta escrita do questionario: opcional, com limite de palavras. */
+const respostaEscrita = z
+  .string()
+  .max(1200, { message: "Sua resposta ficou muito longa." })
+  .transform((v) => v.trim())
+  .refine((v) => contarPalavras(v) <= LIMITE_DE_PALAVRAS_PESQUISA, {
+    message: `Escreva no máximo ${LIMITE_DE_PALAVRAS_PESQUISA} palavras.`,
+  })
+  .optional()
+  .default("");
+
+/**
+ * O envio do questionario.
+ *
+ * Todas as 28 afirmacoes sao obrigatorias — a propria escala oferece
+ * "Nao sei / Nao se aplica" para quem nao quiser opinar, entao deixar em
+ * branco nao e uma recusa, e um esquecimento. Com a pergunta em branco
+ * aceita, metade da planilha chegaria vazia e a pesquisa perderia o sentido.
+ *
+ * O esquema e montado a partir da lista de perguntas: acrescentar uma
+ * afirmacao em @/lib/pesquisa passa a exigi-la aqui automaticamente, sem
+ * ninguem precisar lembrar de mexer na validacao.
+ */
+export const pesquisaSchema = z.object({
+  respostas: z.object(
+    Object.fromEntries(
+      CHAVES_PESQUISA.map((chave) => [
+        chave,
+        z
+          .number({ error: "Falta responder uma pergunta." })
+          .int()
+          .refine((v) => VALORES_DA_ESCALA.includes(v), {
+            message: "Escolha uma das alternativas.",
+          }),
+      ]),
+    ) as Record<string, z.ZodType<number>>,
+  ),
+  ...Object.fromEntries(
+    PERGUNTAS_ABERTAS.map((p) => [p.coluna, respostaEscrita]),
+  ),
+});
+
+/** Dados que a pessoa envia para entrar no questionario final. */
+export const entradaPesquisaSchema = z.object({
+  celular: z
+    .string({ error: "Digite seu celular." })
+    .transform(somenteDigitos)
+    .refine(celularEhValido, {
+      message: "Digite o celular com DDD, o mesmo que você usou na inscrição.",
+    }),
+
+  codigo: z
+    .string({ error: "Digite o código mostrado na sala." })
+    .transform((v) => somenteDigitos(v))
+    .refine((v) => v.length === 4, {
+      message: "O código tem 4 números. Ele aparece na tela da sala.",
+    }),
 });

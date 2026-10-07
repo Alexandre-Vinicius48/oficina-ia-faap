@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { administradorAtual } from "@/lib/auth";
 import { PainelInscritos } from "@/components/PainelInscritos";
 import { PainelAulas } from "@/components/PainelAulas";
+import { PainelPesquisa } from "@/components/PainelPesquisa";
 import { ControleDeInscricoes } from "@/components/ControleDeInscricoes";
+import { Icone } from "@/components/Icones";
 import { LogosParceria } from "@/components/Logos";
 
 export const metadata: Metadata = {
@@ -32,14 +35,33 @@ export default async function PaginaDashboard() {
 
       <main id="conteudo" className="flex-1">
         <div className="mx-auto max-w-6xl px-5 py-10">
-          <h1 className="mb-8 text-[1.8rem] font-extrabold text-marca-900">
-            Painel de inscritos
-          </h1>
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <h1 className="text-[1.8rem] font-extrabold text-marca-900">
+              Painel de inscritos
+            </h1>
+
+            {/* O dashboard fica em outra pagina, e nao mais um bloco aqui
+                embaixo: esta tela serve para AGIR (abrir avaliacao, liberar
+                questionario, apagar resposta) e a outra para OLHAR. Juntar
+                as duas faria uma pagina longa demais para achar um botao. */}
+            <Link
+              href="/admin/dashboard/resultados"
+              className="flex items-center gap-3 rounded-2xl bg-marca-700 px-6 py-4 text-[1.05rem] font-extrabold text-white transition hover:bg-marca-800"
+            >
+              <Icone nome="grafico" className="h-6 w-6" />
+              DASHBOARD
+            </Link>
+          </div>
+
           <ControleDeInscricoes />
 
           <div className="my-12 border-t-2 border-borda" />
 
           <PainelAulas />
+
+          <div className="my-12 border-t-2 border-borda" />
+
+          <PainelPesquisa />
 
           <div className="my-12 border-t-2 border-borda" />
 
